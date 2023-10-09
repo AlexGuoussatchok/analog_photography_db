@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:analog_photography_db/screens/catalogue_screen.dart';
+import 'package:analog_photography_db/screens/inventory_screen.dart';
+import 'package:analog_photography_db/screens/darkroom_screen.dart';
+import 'package:analog_photography_db/screens/photo_notes_screen.dart';
+
 
 void main() => runApp(const MyApp());
 
@@ -20,9 +25,9 @@ class MyApp extends StatelessWidget {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
-  Widget _customButton(String label) {
+  Widget _customButton(String label, VoidCallback onPressed) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.grey,
         minimumSize: const Size(150, 100),
@@ -53,10 +58,18 @@ class HomeScreen extends StatelessWidget {
               crossAxisSpacing: 20,
               padding: const EdgeInsets.all(20),
               children: <Widget>[
-                _customButton('Catalogue'),
-                _customButton('Inventory'),
-                _customButton('Darkroom'),
-                _customButton('Photo Notes'),
+                _customButton('Catalogue', () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CatalogueScreen()));
+                }),
+                _customButton('Inventory', () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const InventoryScreen()));
+                }),
+                _customButton('Darkroom', () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const DarkroomScreen()));
+                }),
+                _customButton('Photo Notes', () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const PhotoNotesScreen()));
+                }),
               ],
             ),
           ),
