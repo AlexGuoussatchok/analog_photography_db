@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 
 class CamerasCatalogueDatabaseHelper {
   static const String dbName = 'cameras_catalogue.db';
-  static const _databaseVersion = 20231009;
+  static const _databaseVersion = 20231010;
   static Database? _database;
 
   static Future<Database?> get database async {
@@ -44,7 +44,7 @@ class CamerasCatalogueDatabaseHelper {
   Future<List<Map<String, dynamic>>> getCameraBrands() async {
     final db = await database;
     try {
-      return await db!.query('camera_brands', columns: ['brand']);
+      return await db!.query('camera_brands', columns: ['brand'], orderBy: 'brand ASC');
     } catch (e) {
       print("Error fetching camera brands: $e");
       return [];
@@ -54,12 +54,13 @@ class CamerasCatalogueDatabaseHelper {
   Future<List<Map<String, dynamic>>> getCameraModels(String tableName) async {
     final db = await database;
     try {
-      return await db!.query(tableName, columns: ['model']);
+      return await db!.query(tableName, columns: ['model'], orderBy: 'model ASC');
     } catch (e) {
       print("Error fetching camera models from $tableName: $e");
       return [];
     }
   }
+
 
   Future<Map<String, dynamic>> getCameraDetails(String tableName, String model) async {
     final db = await database;
