@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
 
 class CatalogueCamerasScreen extends StatefulWidget {
-  const CatalogueCamerasScreen({Key? key}) : super(key: key);  // Corrected this line
+  const CatalogueCamerasScreen({Key? key}) : super(key: key);
 
   @override
   _CatalogueCamerasScreenState createState() => _CatalogueCamerasScreenState();
@@ -43,7 +43,67 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
     }
   }
 
-  @override  // Corrected this annotation
+  void _showCameraDetails(BuildContext context, Map<String, dynamic> details) {
+    // List of columns to exclude from the output
+    List<String> excludedColumns = ['id', 'model'];
+
+    List<Widget> detailWidgets = details.entries.where((entry) =>
+    // Exclude entries that are null or in the excludedColumns list
+    entry.value != null &&
+        entry.value.toString().isNotEmpty &&
+        !excludedColumns.contains(entry.key)
+    ).toList().asMap().entries.map((mapEntry) {
+      int index = mapEntry.key;
+      MapEntry<String, dynamic> entry = mapEntry.value;
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade400),
+          color: index.isEven ? Colors.grey.shade100 : Colors.white,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              entry.key.replaceAll('_', ' '),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ), // The column name
+            const SizedBox(height: 4.0),
+            Text(entry.value.toString()), // The value for that column
+          ],
+        ),
+      );
+    }).toList();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: detailWidgets,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +126,6 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  // to make it take the full width of the container
                   items: cameraBrands.map((String brand) {
                     return DropdownMenuItem<String>(
                       value: brand,
@@ -85,15 +144,23 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
               ),
             ),
             const SizedBox(height: 16.0),
-            // provides spacing between the dropdown and the list
             Expanded(
               child: ListView.builder(
                 itemCount: cameraModels.length,
                 itemBuilder: (context, index) {
-                  return ListTile(title: Text(cameraModels[index]));
+                  return ListTile(
+                    title: Text(cameraModels[index]),
+                    onTap: () async {
+                      String tableName = '${selectedBrand!.toLowerCase()}_cameras_catalogue';
+                      Map<String, dynamic> details = await CamerasCatalogueDatabaseHelper().getCameraDetails(tableName, cameraModels[index]);
+
+                      _showCameraDetails(context, details);
+                    },
+                  );
                 },
               ),
             )
+
           ],
         ),
       ),
