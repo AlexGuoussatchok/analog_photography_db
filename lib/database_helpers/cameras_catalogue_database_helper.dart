@@ -51,6 +51,17 @@ class CamerasCatalogueDatabaseHelper {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getCameraModels(String tableName) async {
+    final db = await database;
+    try {
+      return await db!.query(tableName, columns: ['model']);
+    } catch (e) {
+      print("Error fetching camera models from $tableName: $e");
+      return [];
+    }
+  }
+
+
   Future<void> close() async {
     if (_database != null) {
       await _database!.close();
