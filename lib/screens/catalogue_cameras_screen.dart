@@ -44,8 +44,11 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
   }
 
   void _showCameraDetails(BuildContext context, Map<String, dynamic> details) {
-    // List of columns to exclude from the output
     List<String> excludedColumns = ['id', 'model'];
+
+    String brand = selectedBrand!.toLowerCase();
+    String imageId = details['id'].toString();
+    String imagePath = 'assets/images/cameras/$brand/$imageId.JPG';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
     // Exclude entries that are null or in the excludedColumns list
@@ -77,15 +80,22 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
       );
     }).toList();
 
+    // Combined list of widgets with image and details
+    List<Widget> combinedWidgets = [
+      Image.asset(imagePath), // Display the camera image
+      Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
+      const SizedBox(height: 10.0), // Optional: To add some spacing
+      ...detailWidgets
+    ];
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: detailWidgets,
+              children: combinedWidgets,
             ),
           ),
           actions: <Widget>[
@@ -100,6 +110,7 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
       },
     );
   }
+
 
 
 
