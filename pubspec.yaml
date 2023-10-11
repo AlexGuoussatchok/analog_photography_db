@@ -29,8 +29,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/databases/cameras_catalogue.db
+    - assets/databases/lenses_catalogue.db
     - assets/images/cameras/agfa/
     - assets/images/cameras/canon/
     - assets/images/cameras/nikon/
+    - assets/images/lenses/asahi_pentax/
 
 
