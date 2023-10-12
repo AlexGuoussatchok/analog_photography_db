@@ -5,12 +5,14 @@ import 'package:analog_photography_db/screens/darkroom_screen.dart';
 import 'package:analog_photography_db/screens/photo_notes_screen.dart';
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/lenses_catalogue_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/films_catalogue_database_helper.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CamerasCatalogueDatabaseHelper.initializeDatabase();
   await LensesCatalogueDatabaseHelper.initializeDatabase();
+  await FilmsCatalogueDatabaseHelper.initializeDatabase();
   runApp(const MyApp());
 }
 
