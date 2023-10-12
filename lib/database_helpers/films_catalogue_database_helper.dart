@@ -62,12 +62,23 @@ class FilmsCatalogueDatabaseHelper {
     final db = await database;
     try {
       String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_films_catalogue';
-      return await db!.query(tableName, columns: ['name'], orderBy: 'name ASC');
+      return await db!.query(
+          tableName,
+          columns: ['name'],
+          orderBy: '''
+        CASE WHEN production_state = 'in production' THEN 1 
+             WHEN production_state IS NULL OR production_state = 'discontinued' THEN 2 
+             ELSE 3 
+        END, 
+        name ASC
+      '''
+      );
     } catch (e) {
       print("Error fetching films names from $brand: $e");
       return [];
     }
   }
+
 
   Future<Map<String, dynamic>> getItemDetails(String tableName, String name) async {
     final db = await database;
