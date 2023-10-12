@@ -1,103 +1,151 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:analog_photography_db/database_helpers/inventory_database_helper.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({Key? key}) : super(key: key);
 
   @override
   _InventoryScreenState createState() => _InventoryScreenState();
+
 }
 
 class _InventoryScreenState extends State<InventoryScreen>
     with TickerProviderStateMixin {
+  Database? collectionDb;
+  Database? wishlistDb;
+  Database? sellListDb;
+  Database? borrowedDb;
   late TabController _firstTabController;
   late TabController _secondTabController;
+
 
   @override
   void initState() {
     super.initState();
     _firstTabController = TabController(length: 4, vsync: this);
     _secondTabController = TabController(length: 14, vsync: this);
+
+    _initializeDatabases();
   }
+
+  Future<void> _initializeDatabases() async {
+    collectionDb =
+    await InventoryDatabaseHelper.initDatabase('inventory_collection.db');
+    wishlistDb =
+    await InventoryDatabaseHelper.initDatabase('inventory_wishlist.db');
+    sellListDb =
+    await InventoryDatabaseHelper.initDatabase('inventory_sell_list.db');
+    borrowedDb =
+    await InventoryDatabaseHelper.initDatabase('inventory_borrowed_stuff.db');
+  }
+
 
   @override
   void dispose() {
     _firstTabController.dispose();
     _secondTabController.dispose();
+
+    // Close Databases
+    collectionDb?.close();
+    wishlistDb?.close();
+    sellListDb?.close();
+    borrowedDb?.close();
+    // Close other databases similarly, if needed
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Inventory'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(120.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10.0),
-              const Divider(height: 1.0, thickness: 3.0, color: Colors.white),
-              Container(
-                color: Colors.white,
-                child: TabBar(
-                  controller: _firstTabController,
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicator: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  tabs: [
-                    Tab(text: 'Collection'),
-                    Tab(text: 'Wishlist'),
-                    Tab(text: 'Sell-list'),
-                    Tab(text: 'Borrowed'),
+    return FutureBuilder(
+      future: _initializeDatabases(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('My Inventory'),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(120.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10.0),
+                    const Divider(
+                        height: 1.0, thickness: 3.0, color: Colors.white),
+                    Container(
+                      color: Colors.white,
+                      child: TabBar(
+                        controller: _firstTabController,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: Colors.grey,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        indicator: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        tabs: const [
+                          Tab(text: 'Collection'),
+                          Tab(text: 'Wishlist'),
+                          Tab(text: 'Sell-list'),
+                          Tab(text: 'Borrowed'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    const Divider(
+                        height: 1.0, thickness: 3.0, color: Colors.white),
+                    Container(
+                      color: Colors.white,
+                      child: TabBar(
+                        controller: _secondTabController,
+                        isScrollable: true,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: Colors.grey,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        indicator: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        tabs: const [
+                          Tab(text: 'Cameras'),
+                          Tab(text: 'Lenses'),
+                          Tab(text: 'Flashes'),
+                          Tab(text: 'Exposure meters'),
+                          Tab(text: 'Films'),
+                          Tab(text: 'Filters'),
+                          Tab(text: 'Photo papers'),
+                          Tab(text: 'Enlargers'),
+                          Tab(text: 'Color Analysers'),
+                          Tab(text: 'Film Processors'),
+                          Tab(text: 'Paper Dryers'),
+                          Tab(text: 'Print Washers'),
+                          Tab(text: 'Film Scanners'),
+                          Tab(text: 'Photochemistry'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 10.0),
-              const Divider(height: 1.0, thickness: 3.0, color: Colors.white),
-              Container(
-                color: Colors.white,
-                child: TabBar(
-                  controller: _secondTabController,
-                  isScrollable: true,
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicator: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  tabs: const [
-                    Tab(text: 'Cameras'),
-                    Tab(text: 'Lenses'),
-                    Tab(text: 'Flashes'),
-                    Tab(text: 'Exposure meters'),
-                    Tab(text: 'Films'),
-                    Tab(text: 'Filters'),
-                    Tab(text: 'Photo papers'),
-                    Tab(text: 'Enlargers'),
-                    Tab(text: 'Color Analysers'),
-                    Tab(text: 'Film Processors'),
-                    Tab(text: 'Papers Dryers'),
-                    Tab(text: 'Print Washers'),
-                    Tab(text: 'Film Scanners'),
-                    Tab(text: 'Photochemistry'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: TabBarView(
-        controller: _firstTabController,
-        children: [
-          ...List.generate(4, (index) => const Center(child: Text('Content for selected tab.'))),
-        ],
-      ),
+            ),
+            body: TabBarView(
+              controller: _firstTabController,
+              children: [
+                ...List.generate(4, (index) => const Center(
+                    child: Text('Content for selected tab.'))),
+              ],
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return const Scaffold(
+            body: Center(child: Text('Error initializing database.')),
+          );
+        } else {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
     );
   }
 }
