@@ -34,6 +34,7 @@ flutter:
     - assets/images/cameras/agfa/
     - assets/images/cameras/canon/
     - assets/images/cameras/nikon/
+    - assets/images/cameras/olympus/
     - assets/images/lenses/asahi_pentax/
     - assets/images/films/tasma/
 
