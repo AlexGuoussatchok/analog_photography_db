@@ -4,7 +4,7 @@ class InventoryCamera {
   int? id;
   String brand;
   String model;
-  String serialNumber;
+  String? serialNumber;
   DateTime? purchaseDate;
   double? pricePaid;
   String condition;
@@ -17,7 +17,7 @@ class InventoryCamera {
     this.id,
     required this.brand,
     required this.model,
-    required this.serialNumber,
+    this.serialNumber,
     this.purchaseDate,
     this.pricePaid,
     required this.condition,
