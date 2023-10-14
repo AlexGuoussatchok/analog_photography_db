@@ -31,11 +31,14 @@ flutter:
     - assets/databases/cameras_catalogue.db
     - assets/databases/lenses_catalogue.db
     - assets/databases/films_catalogue.db
+    - assets/databases/flashes_catalogue.db
     - assets/images/cameras/agfa/
     - assets/images/cameras/canon/
     - assets/images/cameras/nikon/
     - assets/images/cameras/olympus/
-    - assets/images/lenses/asahi_pentax/
     - assets/images/films/tasma/
+    - assets/images/flashes/canon/
+    - assets/images/lenses/asahi_pentax/
+
 
 

@@ -7,6 +7,7 @@ import 'package:analog_photography_db/database_helpers/cameras_catalogue_databas
 import 'package:analog_photography_db/database_helpers/lenses_catalogue_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/films_catalogue_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/flashes_catalogue_database_helper.dart';
 
 
 void main() async {
@@ -14,6 +15,7 @@ void main() async {
   await CamerasCatalogueDatabaseHelper.initializeDatabase();
   await LensesCatalogueDatabaseHelper.initializeDatabase();
   await FilmsCatalogueDatabaseHelper.initializeDatabase();
+  await FlashesCatalogueDatabaseHelper.initializeDatabase();
   await InventoryDatabaseHelper.initDatabase('inventory_collection.db');
   await InventoryDatabaseHelper.initDatabase('inventory_wishlist.db');
   await InventoryDatabaseHelper.initDatabase('inventory_sell_list.db');
