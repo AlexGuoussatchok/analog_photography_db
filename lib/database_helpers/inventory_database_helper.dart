@@ -667,16 +667,4 @@ class InventoryDatabaseHelper {
       }
     }
   }
-
-  // 1. Fetch all records from the 'cameras' table
-  static Future<List<Map<String, dynamic>>> fetchCameras() async {
-    final db = await initDatabase('inventory_collection.db');
-    return await db.query('cameras');
-  }
-
-  // 2. Insert a new record into the 'cameras' table
-  static Future<void> insertCamera(Map<String, dynamic> cameraData) async {
-    final db = await initDatabase('inventory_collection.db');
-    await db.insert('cameras', cameraData);
-  }
 }

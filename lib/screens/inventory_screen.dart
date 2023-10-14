@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:analog_photography_db/database_helpers/inventory_database_helper.dart';
+import 'package:analog_photography_db/screens/inventory_collection_cameras_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({Key? key}) : super(key: key);
@@ -131,10 +132,23 @@ class _InventoryScreenState extends State<InventoryScreen>
             body: TabBarView(
               controller: _firstTabController,
               children: [
-                ...List.generate(4, (index) => const Center(
-                    child: Text('Content for selected tab.'))),
+                // First tab (Collection)
+                TabBarView(
+                  controller: _secondTabController,
+                  children: [
+                    // Cameras Tab
+                    InventoryCollectionCamerasScreen(),
+                    // Add other screens for Lenses, Flashes, etc.
+                    ...List.generate(13, (index) => const Center(child: Text('Content for selected tab.'))),
+                  ],
+                ),
+                // Content for other tabs (Wishlist, Sell-list, Borrowed)
+                const Center(child: Text('Wishlist content here.')),
+                const Center(child: Text('Sell-list content here.')),
+                const Center(child: Text('Borrowed content here.')),
               ],
             ),
+
           );
         } else if (snapshot.hasError) {
           return const Scaffold(

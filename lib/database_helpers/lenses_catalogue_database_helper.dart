@@ -35,7 +35,6 @@ class LensesCatalogueDatabaseHelper {
   }
   LensesCatalogueDatabaseHelper._privateConstructor();
 
-
   static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (newVersion > oldVersion) {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -88,8 +87,6 @@ class LensesCatalogueDatabaseHelper {
     String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_lenses_catalogue';
     return await getItemDetails(tableName, model);
   }
-
-
 
   Future<void> close() async {
     if (_database != null) {
