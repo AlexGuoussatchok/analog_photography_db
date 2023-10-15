@@ -137,7 +137,7 @@ class _InventoryScreenState extends State<InventoryScreen>
                   controller: _secondTabController,
                   children: [
                     // Cameras Tab
-                    InventoryCollectionCamerasScreen(),
+                    const InventoryCollectionCamerasScreen(),
                     // Add other screens for Lenses, Flashes, etc.
                     ...List.generate(13, (index) => const Center(child: Text('Content for selected tab.'))),
                   ],
