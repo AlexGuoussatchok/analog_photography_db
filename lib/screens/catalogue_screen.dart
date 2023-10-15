@@ -58,7 +58,7 @@ class CatalogueScreen extends StatelessWidget {
               }),
               _catalogueButton('Exposure / Flash Meters', () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CatalogueExposureMetersScreen()));
+                    MaterialPageRoute(builder: (context) => const CatalogueMetersScreen()));
               }),
               _catalogueButton('Filters', () {
                 Navigator.of(context).push(
