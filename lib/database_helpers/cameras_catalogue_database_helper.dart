@@ -77,6 +77,19 @@ class CamerasCatalogueDatabaseHelper {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getCameraModelsByBrand(String brand) async {
+    final db = await database;
+
+    if (db == null) {
+      throw Exception("Database not initialized");
+    }
+
+    final tableName = brand.toLowerCase() + '_cameras_catalogue';
+    final result = await db.query(tableName, columns: ['model'], orderBy: 'model ASC');
+    return result;
+  }
+
+
   Future<void> close() async {
     if (_database != null) {
       await _database!.close();

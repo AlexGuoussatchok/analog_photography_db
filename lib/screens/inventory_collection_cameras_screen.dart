@@ -5,7 +5,7 @@ import 'package:analog_photography_db/widgets/collection/cameras_list_item.dart'
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
 
 class InventoryCollectionCamerasScreen extends StatefulWidget {
-  const InventoryCollectionCamerasScreen({super.key});
+  const InventoryCollectionCamerasScreen({Key? key}) : super(key: key);
 
   @override
   _InventoryCollectionCamerasScreenState createState() => _InventoryCollectionCamerasScreenState();
@@ -13,9 +13,10 @@ class InventoryCollectionCamerasScreen extends StatefulWidget {
 
 class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCamerasScreen> {
   List<InventoryCamera> _cameras = [];
-
+  final List<String> _cameraModels = [];
+  String? _dialogSelectedBrand;
+  List<String> _dialogCameraModels = [];
   bool _isLoading = true;
-
 
   @override
   void initState() {
@@ -31,21 +32,52 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     });
   }
 
+  Future<void> _updateCameraModels() async {
+    if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
+      final modelsData = await CamerasCatalogueDatabaseHelper().getCameraModelsByBrand(_dialogSelectedBrand!);
+
+      setState(() {
+        _dialogCameraModels = modelsData.map((item) => item['model'] as String).toList();
+      });
+    } else {
+      setState(() {
+        _dialogCameraModels = [];
+      });
+    }
+  }
+
   void _showAddCameraDialog(BuildContext context) async {
     final List<Map<String, dynamic>> brandList = await CamerasCatalogueDatabaseHelper().getCameraBrands();
     final List<String> brandNames = brandList.map((e) => e['brand'] as String).toList();
 
-    String? selectedBrand;
+    String? dialogSelectedBrand;
+    List<String> dialogCameraModels = [];
 
-    final TextEditingController modelController = TextEditingController();
-    final TextEditingController serialNumberController = TextEditingController();
-    final TextEditingController purchaseDateController = TextEditingController();
-    final TextEditingController pricePaidController = TextEditingController();
-    final TextEditingController conditionController = TextEditingController();
-    final TextEditingController filmLoadDateController = TextEditingController();
-    final TextEditingController filmLoadedController = TextEditingController();
-    final TextEditingController averagePriceController = TextEditingController();
-    final TextEditingController commentsController = TextEditingController();
+    final modelController = TextEditingController();
+    final serialNumberController = TextEditingController();
+    final purchaseDateController = TextEditingController();
+    final pricePaidController = TextEditingController();
+    final conditionController = TextEditingController();
+    final filmLoadDateController = TextEditingController();
+    final filmLoadedController = TextEditingController();
+    final averagePriceController = TextEditingController();
+    final commentsController = TextEditingController();
+
+    Future<void> updateCameraModels(StateSetter setState) async {
+      if (dialogSelectedBrand != null && dialogSelectedBrand!.isNotEmpty) {
+        final camerasCatalogueDbHelper = CamerasCatalogueDatabaseHelper();
+        final modelsData = await camerasCatalogueDbHelper.getCameraModelsByBrand(dialogSelectedBrand!.toLowerCase());
+
+        setState(() {
+          dialogCameraModels = modelsData.map((item) => item['model'] as String).toList();
+          modelController.text = ''; // or set it to null or an initial value if required
+        });
+      } else {
+        setState(() {
+          dialogCameraModels = [];
+        });
+      }
+    }
 
     showDialog(
       context: context,
@@ -53,64 +85,84 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
         return AlertDialog(
           title: const Text('Add New Camera'),
           content: SingleChildScrollView(
-            child: Column(
-              children: [
-                DropdownButtonFormField<String>(
-                  value: selectedBrand,
-                  items: brandNames.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    selectedBrand = newValue!;
-                  },
-                  decoration: const InputDecoration(labelText: 'Brand'),
-                ),
-                TextField(
-                  controller: modelController,
-                  decoration: const InputDecoration(labelText: 'Model'),
-                ),
-                TextField(
-                  controller: serialNumberController,
-                  decoration: const InputDecoration(labelText: 'Serial Number'),
-                ),
-                TextField(
-                  controller: purchaseDateController,
-                  decoration: const InputDecoration(labelText: 'Purchase Date'),
-                ),
-                TextField(
-                  controller: pricePaidController,
-                  decoration: const InputDecoration(labelText: 'Price Paid'),
-                ),
-                TextField(
-                  controller: conditionController,
-                  decoration: const InputDecoration(labelText: 'Condition'),
-                ),
-                TextField(
-                  controller: filmLoadDateController,
-                  decoration: const InputDecoration(labelText: 'Film Load Date'),
-                ),
-                TextField(
-                  controller: filmLoadedController,
-                  decoration: const InputDecoration(labelText: 'Film Loaded'),
-                ),
-                TextField(
-                  controller: averagePriceController,
-                  decoration: const InputDecoration(labelText: 'Average Price'),
-                ),
-                TextField(
-                  controller: commentsController,
-                  decoration: const InputDecoration(labelText: 'Comments'),
-                ),
-              ],
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter dialogSetState) {
+                return Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: dialogSelectedBrand,
+                      items: brandNames.map((String brand) {
+                        return DropdownMenuItem<String>(
+                          value: brand,
+                          child: Text(brand),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        dialogSetState(() {
+                          dialogSelectedBrand = newValue;
+                          modelController.text = '';  // Clear the model when brand changes.
+                        });
+                        updateCameraModels(dialogSetState);  // Passing the StateSetter to updateCameraModels function
+                      },
+                      decoration: const InputDecoration(labelText: 'Brand'),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: modelController.text.isNotEmpty ? modelController.text : null,  // Use the value of modelController for the dropdown value.
+                      items: dialogCameraModels.map((String model) {
+                        return DropdownMenuItem<String>(
+                          value: model,
+                          child: Text(model),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        dialogSetState(() {
+                          modelController.text = newValue!;
+                        });
+                      },
+                      decoration: const InputDecoration(labelText: 'Model'),
+                    ),
+
+                    TextField(
+                      controller: serialNumberController,
+                      decoration: const InputDecoration(labelText: 'Serial Number'),
+                    ),
+                    TextField(
+                      controller: purchaseDateController,
+                      decoration: const InputDecoration(labelText: 'Purchase Date'),
+                    ),
+                    TextField(
+                      controller: pricePaidController,
+                      decoration: const InputDecoration(labelText: 'Price Paid'),
+                    ),
+                    TextField(
+                      controller: conditionController,
+                      decoration: const InputDecoration(labelText: 'Condition'),
+                    ),
+                    TextField(
+                      controller: filmLoadDateController,
+                      decoration: const InputDecoration(labelText: 'Film Load Date'),
+                    ),
+                    TextField(
+                      controller: filmLoadedController,
+                      decoration: const InputDecoration(labelText: 'Film Loaded'),
+                    ),
+                    TextField(
+                      controller: averagePriceController,
+                      decoration: const InputDecoration(labelText: 'Average Price'),
+                    ),
+                    TextField(
+                      controller: commentsController,
+                      decoration: const InputDecoration(labelText: 'Comments'),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
             ),
@@ -120,7 +172,7 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
                 double? averagePrice = double.tryParse(averagePriceController.text);
 
                 final newCamera = InventoryCamera(
-                  brand: selectedBrand!,
+                  brand: dialogSelectedBrand!,
                   model: modelController.text,
                   serialNumber: serialNumberController.text,
                   purchaseDate: DateTime.tryParse(purchaseDateController.text),
@@ -133,9 +185,9 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
                 );
 
                 await CamerasDatabaseHelper.insertCamera(newCamera);
-                // _loadCameras(); // Refresh the camera list
+                _loadCameras();
 
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Add'),
             ),
@@ -144,7 +196,6 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
