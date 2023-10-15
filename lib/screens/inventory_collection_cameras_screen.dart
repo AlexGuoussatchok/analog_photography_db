@@ -3,6 +3,8 @@ import 'package:analog_photography_db/database_helpers/inventory_collection/came
 import 'package:analog_photography_db/models/inventory_camera.dart';
 import 'package:analog_photography_db/widgets/collection/cameras_list_item.dart';
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
+import 'package:analog_photography_db/lists/cameras_condition_list.dart';
+
 
 class InventoryCollectionCamerasScreen extends StatefulWidget {
   const InventoryCollectionCamerasScreen({Key? key}) : super(key: key);
@@ -17,6 +19,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
   String? _dialogSelectedBrand;
   List<String> _dialogCameraModels = [];
   bool _isLoading = true;
+  DateTime selectedDate = DateTime.now();
+
 
   @override
   void initState() {
@@ -26,11 +30,15 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
 
   _loadCameras() async {
     var cameras = await CamerasDatabaseHelper.fetchCameras();
-    setState(() {
-      _cameras = cameras;
-      _isLoading = false;
-    });
+
+    if (mounted) {
+      setState(() {
+        _cameras = cameras;
+        _isLoading = false;
+      });
+    }
   }
+
 
   Future<void> _updateCameraModels() async {
     if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
@@ -45,6 +53,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
       });
     }
   }
+
+
 
   void _showAddCameraDialog(BuildContext context) async {
     final List<Map<String, dynamic>> brandList = await CamerasCatalogueDatabaseHelper().getCameraBrands();
@@ -78,6 +88,37 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
         });
       }
     }
+
+    Future<void> selectDate(BuildContext context) async {
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2222),
+      );
+      if (pickedDate != null && pickedDate != selectedDate)
+        setState(() {
+          selectedDate = pickedDate;
+          purchaseDateController.text = "${selectedDate.toLocal()}".split(' ')[0]; // formats it to yyyy-mm-dd
+        });
+    }
+
+    Future<void> selectFilmLoadedDate(BuildContext context) async {
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now(),
+      );
+
+      if (pickedDate != null) {
+        setState(() {
+          filmLoadDateController.text = '${pickedDate.toLocal()}'.split(' ')[0];
+        });
+      }
+    }
+
+
 
     showDialog(
       context: context,
@@ -124,32 +165,68 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
 
                     TextField(
                       controller: serialNumberController,
+                      keyboardType: TextInputType.text,
                       decoration: const InputDecoration(labelText: 'Serial Number'),
                     ),
+
                     TextField(
                       controller: purchaseDateController,
+                      readOnly: true,  // Makes the text field read-only, so it's not editable
                       decoration: const InputDecoration(labelText: 'Purchase Date'),
+                      onTap: () {
+                        selectDate(context);
+                      },
                     ),
+
                     TextField(
                       controller: pricePaidController,
-                      decoration: const InputDecoration(labelText: 'Price Paid'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),  // Ensures numeric keyboard layout
+                      decoration: const InputDecoration(
+                        labelText: 'Price Paid',
+                        suffixText: '€',  // Display Euro sign at the end
+                      ),
                     ),
-                    TextField(
-                      controller: conditionController,
+
+
+                    DropdownButtonFormField<String>(
+                      value: conditionController.text.isEmpty ? null : conditionController.text,
+                      items: cameraConditions.map((String condition) {
+                        return DropdownMenuItem<String>(
+                          value: condition,
+                          child: Text(condition),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          conditionController.text = newValue!;
+                        });
+                      },
                       decoration: const InputDecoration(labelText: 'Condition'),
                     ),
+
                     TextField(
                       controller: filmLoadDateController,
+                      readOnly: true,
                       decoration: const InputDecoration(labelText: 'Film Load Date'),
+                      onTap: () {
+                        selectFilmLoadedDate(context);
+                      },
                     ),
+
                     TextField(
                       controller: filmLoadedController,
                       decoration: const InputDecoration(labelText: 'Film Loaded'),
                     ),
+
                     TextField(
                       controller: averagePriceController,
-                      decoration: const InputDecoration(labelText: 'Average Price'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),  // Ensures numeric keyboard layout
+                      decoration: const InputDecoration(
+                        labelText: 'Average Price',
+                        suffixText: '€',  // Display Euro sign at the end
+                      ),
                     ),
+
                     TextField(
                       controller: commentsController,
                       decoration: const InputDecoration(labelText: 'Comments'),
