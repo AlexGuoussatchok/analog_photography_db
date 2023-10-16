@@ -37,6 +37,7 @@ flutter:
     - assets/databases/processors_catalogue.db
     - assets/images/cameras/agfa/
     - assets/images/cameras/canon/
+    - assets/images/cameras/lomo/
     - assets/images/cameras/nikon/
     - assets/images/cameras/olympus/
     - assets/images/films/tasma/
