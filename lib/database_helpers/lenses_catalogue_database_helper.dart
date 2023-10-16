@@ -47,17 +47,17 @@ class LensesCatalogueDatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getLensBrands() async {
+  Future<List<Map<String, dynamic>>> getLensesBrands() async {
     final db = await database;
     try {
       return await db!.query('lenses_brands', columns: ['brand'], orderBy: 'brand ASC');
     } catch (e) {
-      print("Error fetching lens brands: $e");
+      print("Error fetching lenses brands: $e");
       return [];
     }
   }
 
-  Future<List<Map<String, dynamic>>> getLensModels(String brand) async {
+  Future<List<Map<String, dynamic>>> getLensesModels(String brand) async {
     final db = await database;
     try {
       String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_lenses_catalogue';
@@ -66,6 +66,18 @@ class LensesCatalogueDatabaseHelper {
       print("Error fetching lens models from $brand: $e");
       return [];
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getLensesModelsByBrand(String brand) async {
+    final db = await database;
+
+    if (db == null) {
+      throw Exception("Database not initialized");
+    }
+
+    final tableName = brand.toLowerCase() + '_lenses_catalogue';
+    final result = await db.query(tableName, columns: ['model'], orderBy: 'model ASC');
+    return result;
   }
 
   Future<Map<String, dynamic>> getItemDetails(String tableName, String model) async {
@@ -83,7 +95,7 @@ class LensesCatalogueDatabaseHelper {
     }
   }
 
-  Future<Map<String, dynamic>> getLensDetails(String brand, String model) async {
+  Future<Map<String, dynamic>> getLensesDetails(String brand, String model) async {
     String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_lenses_catalogue';
     return await getItemDetails(tableName, model);
   }

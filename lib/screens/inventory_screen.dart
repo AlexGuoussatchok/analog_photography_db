@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:analog_photography_db/database_helpers/inventory_database_helper.dart';
 import 'package:analog_photography_db/screens/inventory_collection_cameras_screen.dart';
+import 'package:analog_photography_db/screens/inventory_collection_lenses_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({Key? key}) : super(key: key);
@@ -139,7 +140,10 @@ class _InventoryScreenState extends State<InventoryScreen>
                     // Cameras Tab
                     const InventoryCollectionCamerasScreen(),
                     // Add other screens for Lenses, Flashes, etc.
-                    ...List.generate(13, (index) => const Center(child: Text('Content for selected tab.'))),
+
+                    const InventoryCollectionLensesScreen(),
+                    ...List.generate(12, (index) => const Center(child: Text('Content for selected tab.'))),
+
                   ],
                 ),
                 // Content for other tabs (Wishlist, Sell-list, Borrowed)

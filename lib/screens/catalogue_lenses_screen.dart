@@ -9,45 +9,45 @@ class CatalogueLensesScreen extends StatefulWidget {
 }
 
 class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
-  List<String> lensBrands = [];
-  List<String> lensModels = [];
+  List<String> lensesBrands = [];
+  List<String> lensesModels = [];
   String? selectedBrand;
 
   @override
   void initState() {
     super.initState();
-    _loadLensBrands();
+    _loadLensesBrands();
   }
 
-  _loadLensBrands() async {
+  _loadLensesBrands() async {
     try {
-      var brands = await LensesCatalogueDatabaseHelper().getLensBrands();
+      var brands = await LensesCatalogueDatabaseHelper().getLensesBrands();
       setState(() {
-        lensBrands = brands.map((e) => e['brand'].toString()).toList();
+        lensesBrands = brands.map((e) => e['brand'].toString()).toList();
       });
     } catch (e) {
       print(e);
     }
   }
 
-  _loadLensModels(String brand) async {
+  _loadLensesModels(String brand) async {
     try {
-      var models = await LensesCatalogueDatabaseHelper().getLensModels(brand);
+      String tableName = '${brand.toLowerCase()}_lenses_catalogue';
+      var models = await LensesCatalogueDatabaseHelper().getLensesModels(
+          tableName);
       setState(() {
-        lensModels = models.map((e) => e['model'].toString()).toList();
+        lensesModels = models.map((e) => e['model'].toString()).toList();
       });
     } catch (e) {
       print(e);
     }
   }
 
-  void _showItemDetails(BuildContext context, Map<String, dynamic> details) {
+  void _showLensesDetails(BuildContext context, Map<String, dynamic> details) {
     List<String> excludedColumns = ['id', 'model'];
 
     String brand = selectedBrand!.toLowerCase();
     String imageId = details['id'].toString();
-
-    // Modify the imagePath for lenses
     String imagePath = 'assets/images/lenses/$brand/$imageId.JPG';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
@@ -82,7 +82,7 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
 
     // Combined list of widgets with image and details
     List<Widget> combinedWidgets = [
-      Image.asset(imagePath), // Display the lens image
+      Image.asset(imagePath), // Display the lenses image
       Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
       const SizedBox(height: 10.0), // Optional: To add some spacing
       ...detailWidgets
@@ -112,10 +112,13 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
   }
 
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.grey,
         title: const Text('Lenses Catalogue'),
       ),
       body: Padding(
@@ -134,7 +137,7 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  items: lensBrands.map((String brand) {
+                  items: lensesBrands.map((String brand) {
                     return DropdownMenuItem<String>(
                       value: brand,
                       child: Text(brand),
@@ -143,11 +146,10 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
                   onChanged: (value) {
                     setState(() {
                       selectedBrand = value!;
-                      lensModels.clear();
-                      _loadLensModels(value);
+                      _loadLensesModels(selectedBrand!);
                     });
                   },
-                  hint: const Text('Select a Brand'),
+                  hint: const Text('Select a brand'),
                   value: selectedBrand,
                 ),
               ),
@@ -155,18 +157,21 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
             const SizedBox(height: 16.0),
             Expanded(
               child: ListView.builder(
-                itemCount: lensModels.length,
+                itemCount: lensesModels.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(lensModels[index]),
+                    title: Text(lensesModels[index]),
                     onTap: () async {
-                      var lensDetails = await LensesCatalogueDatabaseHelper().getLensDetails(selectedBrand!, lensModels[index]);
-                      _showItemDetails(context, lensDetails);
+                      String tableName = '${selectedBrand!.toLowerCase()}_lenses_catalogue';
+                      Map<String, dynamic> details = await LensesCatalogueDatabaseHelper().getLensesDetails(tableName, lensesModels[index]);
+
+                      _showLensesDetails(context, details);
                     },
                   );
                 },
               ),
-            ),
+            )
+
           ],
         ),
       ),
