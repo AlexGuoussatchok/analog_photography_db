@@ -34,6 +34,7 @@ flutter:
     - assets/databases/flashes_catalogue.db
     - assets/databases/exposure_meters_catalogue.db
     - assets/databases/film_scanners_catalogue.db
+    - assets/databases/processors_catalogue.db
     - assets/images/cameras/agfa/
     - assets/images/cameras/canon/
     - assets/images/cameras/nikon/
@@ -43,6 +44,7 @@ flutter:
     - assets/images/lenses/asahi_pentax/
     - assets/images/meters/minolta/
     - assets/images/scanners/minolta/
+    - assets/images/processors/jobo/
 
 
 

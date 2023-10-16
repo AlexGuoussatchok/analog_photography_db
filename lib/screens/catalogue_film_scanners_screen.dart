@@ -82,7 +82,7 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
 
     // Combined list of widgets with image and details
     List<Widget> combinedWidgets = [
-      Image.asset(imagePath),
+      Image.asset(imagePath), // Display the camera image
       Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
       const SizedBox(height: 10.0), // Optional: To add some spacing
       ...detailWidgets
@@ -178,4 +178,3 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
     );
   }
 }
-
