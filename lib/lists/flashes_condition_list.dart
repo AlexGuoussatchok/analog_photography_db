@@ -1,8 +1,7 @@
-const List<String> cameraConditions = [
+const List<String> flashesConditions = [
   'Not Checked',
   'Completely working',
-  'Adjustment needed',
-  'CLA needed',
+  'Repair needed',
   'Faulty',
   'Broken',
   'For parts',

@@ -62,7 +62,7 @@ class FlashesCatalogueDatabaseHelper {
   }
 
 
-  Future<Map<String, dynamic>> getFlashDetails(String tableName, String model) async {
+  Future<Map<String, dynamic>> getFlashesDetails(String tableName, String model) async {
     final db = await database;
     try {
       var result = await db!.query(tableName, where: "model = ?", whereArgs: [model]);
@@ -72,10 +72,23 @@ class FlashesCatalogueDatabaseHelper {
         throw Exception('Model not found in the database.');
       }
     } catch (e) {
-      print("Error fetching flash details for $model from $tableName: $e");
+      print("Error fetching flashes details for $model from $tableName: $e");
       rethrow;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getFlashesModelsByBrand(String brand) async {
+    final db = await database;
+
+    if (db == null) {
+      throw Exception("Database not initialized");
+    }
+
+    final tableName = brand.toLowerCase() + '_flashes_catalogue';
+    final result = await db.query(tableName, columns: ['model'], orderBy: 'model ASC');
+    return result;
+  }
+
 
   Future<void> close() async {
     if (_database != null) {

@@ -160,7 +160,7 @@ class _CatalogueFlashesScreenState extends State<CatalogueFlashesScreen> {
                     title: Text(flashesModels[index]),
                     onTap: () async {
                       String tableName = '${selectedBrand!.toLowerCase()}_flashes_catalogue';
-                      Map<String, dynamic> details = await FlashesCatalogueDatabaseHelper().getFlashDetails(tableName, flashesModels[index]);
+                      Map<String, dynamic> details = await FlashesCatalogueDatabaseHelper().getFlashesDetails(tableName, flashesModels[index]);
 
                       _showFlashDetails(context, details);
                     },
