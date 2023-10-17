@@ -1,49 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:analog_photography_db/database_helpers/film_processors_catalogue_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/processors_catalogue_database_helper.dart';
 
-class CatalogueFilmProcessorsScreen extends StatefulWidget {
-  const CatalogueFilmProcessorsScreen({Key? key}) : super(key: key);
+class CatalogueProcessorsScreen extends StatefulWidget {
+  const CatalogueProcessorsScreen({Key? key}) : super(key: key);
 
   @override
-  _CatalogueFilmProcessorsScreenState createState() => _CatalogueFilmProcessorsScreenState();
+  _CatalogueProcessorsScreenState createState() => _CatalogueProcessorsScreenState();
 }
 
-class _CatalogueFilmProcessorsScreenState extends State<CatalogueFilmProcessorsScreen> {
-  List<String> filmProcessorsBrands = [];
-  List<String> filmProcessorsModels = [];
+class _CatalogueProcessorsScreenState extends State<CatalogueProcessorsScreen> {
+  List<String> processorsBrands = [];
+  List<String> processorsModels = [];
   String? selectedBrand;
 
   @override
   void initState() {
     super.initState();
-    _loadFilmProcessorsBrands();
+    _loadProcessorsBrands();
   }
 
-  _loadFilmProcessorsBrands() async {
+  _loadProcessorsBrands() async {
     try {
-      var brands = await FilmProcessorsCatalogueDatabaseHelper().getFilmProcessorsBrands();
+      var brands = await ProcessorsCatalogueDatabaseHelper().getProcessorsBrands();
       setState(() {
-        filmProcessorsBrands = brands.map((e) => e['brand'].toString()).toList();
+        processorsBrands = brands.map((e) => e['brand'].toString()).toList();
       });
     } catch (e) {
       print(e);
     }
   }
 
-  _loadFilmProcessorsModels(String brand) async {
+  _loadProcessorsModels(String brand) async {
     try {
       String tableName = '${brand.toLowerCase()}_processors_catalogue';
-      var models = await FilmProcessorsCatalogueDatabaseHelper().getFilmProcessorsModels(
+      var models = await ProcessorsCatalogueDatabaseHelper().getProcessorsModels(
           tableName);
       setState(() {
-        filmProcessorsModels = models.map((e) => e['model'].toString()).toList();
+        processorsModels = models.map((e) => e['model'].toString()).toList();
       });
     } catch (e) {
       print(e);
     }
   }
 
-  void _showFilmProcessorsDetails(BuildContext context, Map<String, dynamic> details) {
+  void _showProcessorsDetails(BuildContext context, Map<String, dynamic> details) {
     List<String> excludedColumns = ['id', 'model'];
 
     String brand = selectedBrand!.toLowerCase();
@@ -137,7 +137,7 @@ class _CatalogueFilmProcessorsScreenState extends State<CatalogueFilmProcessorsS
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  items: filmProcessorsBrands.map((String brand) {
+                  items: processorsBrands.map((String brand) {
                     return DropdownMenuItem<String>(
                       value: brand,
                       child: Text(brand),
@@ -146,7 +146,7 @@ class _CatalogueFilmProcessorsScreenState extends State<CatalogueFilmProcessorsS
                   onChanged: (value) {
                     setState(() {
                       selectedBrand = value!;
-                      _loadFilmProcessorsModels(selectedBrand!);
+                      _loadProcessorsModels(selectedBrand!);
                     });
                   },
                   hint: const Text('Select a brand'),
@@ -157,15 +157,15 @@ class _CatalogueFilmProcessorsScreenState extends State<CatalogueFilmProcessorsS
             const SizedBox(height: 16.0),
             Expanded(
               child: ListView.builder(
-                itemCount: filmProcessorsModels.length,
+                itemCount: processorsModels.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(filmProcessorsModels[index]),
+                    title: Text(processorsModels[index]),
                     onTap: () async {
                       String tableName = '${selectedBrand!.toLowerCase()}_processors_catalogue';
-                      Map<String, dynamic> details = await FilmProcessorsCatalogueDatabaseHelper().getFilmProcessorsDetails(tableName, filmProcessorsModels[index]);
+                      Map<String, dynamic> details = await ProcessorsCatalogueDatabaseHelper().getProcessorsDetails(tableName, processorsModels[index]);
 
-                      _showFilmProcessorsDetails(context, details);
+                      _showProcessorsDetails(context, details);
                     },
                   );
                 },

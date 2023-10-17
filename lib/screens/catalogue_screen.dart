@@ -8,7 +8,7 @@ import 'package:analog_photography_db/screens/catalogue_films_screen.dart';
 import 'package:analog_photography_db/screens/catalogue_photo_papers_screen.dart';
 import 'package:analog_photography_db/screens/catalogue_enlargers_screen.dart';
 import 'package:analog_photography_db/screens/catalogue_color_analyzers_screen.dart';
-import 'package:analog_photography_db/screens/catalogue_film_processors_screen.dart';
+import 'package:analog_photography_db/screens/catalogue_processors_screen.dart';
 import 'package:analog_photography_db/screens/catalogue_paper_dryers_screen.dart';
 import 'package:analog_photography_db/screens/catalogue_print_washers_screen.dart';
 import 'package:analog_photography_db/screens/catalogue_film_scanners_screen.dart';
@@ -82,7 +82,7 @@ class CatalogueScreen extends StatelessWidget {
               }),
               _catalogueButton('Film Processors', () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CatalogueFilmProcessorsScreen()));
+                    MaterialPageRoute(builder: (context) => const CatalogueProcessorsScreen()));
               }),
               _catalogueButton('Paper Dryers', () {
                 Navigator.of(context).push(

@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class FilmProcessorsCatalogueDatabaseHelper {
+class ProcessorsCatalogueDatabaseHelper {
   static const String dbName = 'processors_catalogue.db';
   static const _databaseVersion = 20231016;
   static Database? _database;
@@ -41,28 +41,28 @@ class FilmProcessorsCatalogueDatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmProcessorsBrands() async {
+  Future<List<Map<String, dynamic>>> getProcessorsBrands() async {
     final db = await database;
     try {
       return await db!.query('brands', columns: ['brand'], orderBy: 'brand ASC');
     } catch (e) {
-      print("Error fetching Processors brands: $e");
+      print("Error fetching film processors brands: $e");
       return [];
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmProcessorsModels(String tableName) async {
+  Future<List<Map<String, dynamic>>> getProcessorsModels(String tableName) async {
     final db = await database;
     try {
       return await db!.query(tableName, columns: ['model'], orderBy: 'model ASC');
     } catch (e) {
-      print("Error fetching Processors models from $tableName: $e");
+      print("Error fetching film processors models from $tableName: $e");
       return [];
     }
   }
 
 
-  Future<Map<String, dynamic>> getFilmProcessorsDetails(String tableName, String model) async {
+  Future<Map<String, dynamic>> getProcessorsDetails(String tableName, String model) async {
     final db = await database;
     try {
       var result = await db!.query(tableName, where: "model = ?", whereArgs: [model]);
@@ -72,19 +72,19 @@ class FilmProcessorsCatalogueDatabaseHelper {
         throw Exception('Model not found in the database.');
       }
     } catch (e) {
-      print("Error fetching Processors details for $model from $tableName: $e");
+      print("Error fetching film processors details for $model from $tableName: $e");
       rethrow;
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmProcessorsModelsByBrand(String brand) async {
+  Future<List<Map<String, dynamic>>> getProcessorsModelsByBrand(String brand) async {
     final db = await database;
 
     if (db == null) {
       throw Exception("Database not initialized");
     }
 
-    final tableName = brand.toLowerCase() + '_processors_catalogue';
+    final tableName = '${brand.toLowerCase()}_processors_catalogue';
     final result = await db.query(tableName, columns: ['model'], orderBy: 'model ASC');
     return result;
   }
