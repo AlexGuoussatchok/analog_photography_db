@@ -4,6 +4,7 @@ import 'package:analog_photography_db/database_helpers/inventory_database_helper
 import 'package:analog_photography_db/screens/inventory_collection_cameras_screen.dart';
 import 'package:analog_photography_db/screens/inventory_collection_lenses_screen.dart';
 import 'package:analog_photography_db/screens/inventory_collection_flashes_screen.dart';
+import 'package:analog_photography_db/screens/inventory_collection_meters_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({Key? key}) : super(key: key);
@@ -145,7 +146,9 @@ class _InventoryScreenState extends State<InventoryScreen>
                     const InventoryCollectionLensesScreen(),
 
                     const InventoryCollectionFlashesScreen(),
-                    ...List.generate(11, (index) => const Center(child: Text('Content for selected tab.'))),
+
+                    const InventoryCollectionMetersScreen(),
+                    ...List.generate(10, (index) => const Center(child: Text('Content for selected tab.'))),
 
                   ],
                 ),

@@ -46,7 +46,7 @@ class MetersCatalogueDatabaseHelper {
     try {
       return await db!.query('brand', columns: ['brands'], orderBy: 'brands ASC');
     } catch (e) {
-      print("Error fetching flashes brands: $e");
+      print("Error fetching exposure meters brands: $e");
       return [];
     }
   }
@@ -56,14 +56,14 @@ class MetersCatalogueDatabaseHelper {
     try {
       return await db!.query(tableName, columns: ['model'], orderBy: 'model ASC');
     } catch (e) {
-      print("Error fetching meters models from $tableName: $e");
+      print("Error fetching exposure meters models from $tableName: $e");
       return [];
     }
   }
 
-  Future<Map<String, dynamic>> getMetersDetails(String brand, String model) async {
+
+  Future<Map<String, dynamic>> getMetersDetails(String tableName, String model) async {
     final db = await database;
-    String tableName = '${brand.toLowerCase()}_meters_catalogue';
     try {
       var result = await db!.query(tableName, where: "model = ?", whereArgs: [model]);
       if (result.isNotEmpty) {
@@ -72,9 +72,21 @@ class MetersCatalogueDatabaseHelper {
         throw Exception('Model not found in the database.');
       }
     } catch (e) {
-      print("Error fetching meter details for $model from $tableName: $e");
+      print("Error fetching exposure meters details for $model from $tableName: $e");
       rethrow;
     }
+  }
+
+  Future<List<Map<String, dynamic>>> getMetersModelsByBrand(String brand) async {
+    final db = await database;
+
+    if (db == null) {
+      throw Exception("Database not initialized");
+    }
+
+    final tableName = brand.toLowerCase() + '_meters_catalogue';
+    final result = await db.query(tableName, columns: ['model'], orderBy: 'model ASC');
+    return result;
   }
 
 
