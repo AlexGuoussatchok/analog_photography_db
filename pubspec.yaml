@@ -29,6 +29,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/databases/cameras_catalogue.db
+    - assets/databases/dryers_catalogue.db
     - assets/databases/lenses_catalogue.db
     - assets/databases/films_catalogue.db
     - assets/databases/flashes_catalogue.db
@@ -44,6 +45,7 @@ flutter:
     - assets/images/cameras/olympus/
     - assets/images/cameras/pentax/
     - assets/images/cameras/samsung/
+    - assets/images/dryers/ilford/
     - assets/images/films/tasma/
     - assets/images/flashes/canon/
     - assets/images/lenses/asahi_pentax/

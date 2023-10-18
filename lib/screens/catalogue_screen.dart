@@ -86,7 +86,7 @@ class CatalogueScreen extends StatelessWidget {
               }),
               _catalogueButton('Paper Dryers', () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CataloguePaperDryersScreen()));
+                    MaterialPageRoute(builder: (context) => const CatalogueDryersScreen()));
               }),
               _catalogueButton('Print Washers', () {
                 Navigator.of(context).push(
