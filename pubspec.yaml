@@ -37,9 +37,13 @@ flutter:
     - assets/databases/processors_catalogue.db
     - assets/images/cameras/agfa/
     - assets/images/cameras/canon/
+    - assets/images/cameras/fuji/
+    - assets/images/cameras/konica/
     - assets/images/cameras/lomo/
     - assets/images/cameras/nikon/
     - assets/images/cameras/olympus/
+    - assets/images/cameras/pentax/
+    - assets/images/cameras/samsung/
     - assets/images/films/tasma/
     - assets/images/flashes/canon/
     - assets/images/lenses/asahi_pentax/
