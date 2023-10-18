@@ -1,49 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:analog_photography_db/database_helpers/film_scanners_catalogue_database_helper.dart';
 
-class CatalogueFilmScannersScreen extends StatefulWidget {
-  const CatalogueFilmScannersScreen({Key? key}) : super(key: key);
+class CatalogueScannersScreen extends StatefulWidget {
+  const CatalogueScannersScreen({Key? key}) : super(key: key);
 
   @override
-  _CatalogueFilmScannersScreenState createState() => _CatalogueFilmScannersScreenState();
+  _CatalogueScannersScreenState createState() => _CatalogueScannersScreenState();
 }
 
-class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScreen> {
-  List<String> filmScannersBrands = [];
-  List<String> filmScannersModels = [];
+class _CatalogueScannersScreenState extends State<CatalogueScannersScreen> {
+  List<String> scannersBrands = [];
+  List<String> scannersModels = [];
   String? selectedBrand;
 
   @override
   void initState() {
     super.initState();
-    _loadFilmScannersBrands();
+    _loadScannersBrands();
   }
 
-  _loadFilmScannersBrands() async {
+  _loadScannersBrands() async {
     try {
-      var brands = await FilmScannersCatalogueDatabaseHelper().getFilmScannersBrands();
+      var brands = await ScannersCatalogueDatabaseHelper().getScannersBrands();
       setState(() {
-        filmScannersBrands = brands.map((e) => e['brand'].toString()).toList();
+        scannersBrands = brands.map((e) => e['brand'].toString()).toList();
       });
     } catch (e) {
       print(e);
     }
   }
 
-  _loadFilmScannersModels(String brand) async {
+  _loadScannersModels(String brand) async {
     try {
       String tableName = '${brand.toLowerCase()}_scanners_catalogue';
-      var models = await FilmScannersCatalogueDatabaseHelper().getFilmScannersModels(
+      var models = await ScannersCatalogueDatabaseHelper().getScannersModels(
           tableName);
       setState(() {
-        filmScannersModels = models.map((e) => e['model'].toString()).toList();
+        scannersModels = models.map((e) => e['model'].toString()).toList();
       });
     } catch (e) {
       print(e);
     }
   }
 
-  void _showFilmScannersDetails(BuildContext context, Map<String, dynamic> details) {
+  void _showScannersDetails(BuildContext context, Map<String, dynamic> details) {
     List<String> excludedColumns = ['id', 'model'];
 
     String brand = selectedBrand!.toLowerCase();
@@ -82,7 +82,7 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
 
     // Combined list of widgets with image and details
     List<Widget> combinedWidgets = [
-      Image.asset(imagePath), // Display the camera image
+      Image.asset(imagePath), // Display the scanners image
       Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
       const SizedBox(height: 10.0), // Optional: To add some spacing
       ...detailWidgets
@@ -111,9 +111,6 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
     );
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,7 +134,7 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  items: filmScannersBrands.map((String brand) {
+                  items: scannersBrands.map((String brand) {
                     return DropdownMenuItem<String>(
                       value: brand,
                       child: Text(brand),
@@ -146,7 +143,7 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
                   onChanged: (value) {
                     setState(() {
                       selectedBrand = value!;
-                      _loadFilmScannersModels(selectedBrand!);
+                      _loadScannersModels(selectedBrand!);
                     });
                   },
                   hint: const Text('Select a brand'),
@@ -157,15 +154,15 @@ class _CatalogueFilmScannersScreenState extends State<CatalogueFilmScannersScree
             const SizedBox(height: 16.0),
             Expanded(
               child: ListView.builder(
-                itemCount: filmScannersModels.length,
+                itemCount: scannersModels.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(filmScannersModels[index]),
+                    title: Text(scannersModels[index]),
                     onTap: () async {
                       String tableName = '${selectedBrand!.toLowerCase()}_scanners_catalogue';
-                      Map<String, dynamic> details = await FilmScannersCatalogueDatabaseHelper().getFilmScannersDetails(tableName, filmScannersModels[index]);
+                      Map<String, dynamic> details = await ScannersCatalogueDatabaseHelper().getScannersDetails(tableName, scannersModels[index]);
 
-                      _showFilmScannersDetails(context, details);
+                      _showScannersDetails(context, details);
                     },
                   );
                 },

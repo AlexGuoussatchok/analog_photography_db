@@ -94,7 +94,7 @@ class CatalogueScreen extends StatelessWidget {
               }),
               _catalogueButton('Film Scanners', () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CatalogueFilmScannersScreen()));
+                    MaterialPageRoute(builder: (context) => const CatalogueScannersScreen()));
               }),
               _catalogueButton('Photochemistry', () {
                 Navigator.of(context).push(

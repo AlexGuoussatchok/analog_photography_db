@@ -184,9 +184,7 @@ final Map<String, List<TableDefinition>> databaseDefinitions = {
         tableColumns: '''
             id INTEGER PRIMARY KEY, 
             brand TEXT, 
-            model TEXT,
-            film_sizes TEXT,
-            max_resolution TEXT, 
+            model TEXT,          
             purchase_date TEXT,
             price_paid REAL,
             condition TEXT,

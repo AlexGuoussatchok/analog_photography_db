@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class FilmScannersCatalogueDatabaseHelper {
+class ScannersCatalogueDatabaseHelper {
   static const String dbName = 'film_scanners_catalogue.db';
   static const _databaseVersion = 20231016;
   static Database? _database;
@@ -41,7 +41,7 @@ class FilmScannersCatalogueDatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmScannersBrands() async {
+  Future<List<Map<String, dynamic>>> getScannersBrands() async {
     final db = await database;
     try {
       return await db!.query('brands', columns: ['brand'], orderBy: 'brand ASC');
@@ -51,18 +51,17 @@ class FilmScannersCatalogueDatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmScannersModels(String tableName) async {
+  Future<List<Map<String, dynamic>>> getScannersModels(String tableName) async {
     final db = await database;
     try {
       return await db!.query(tableName, columns: ['model'], orderBy: 'model ASC');
     } catch (e) {
-      print("Error fetching scanners models from $tableName: $e");
+      print("Error fetching Scanners models from $tableName: $e");
       return [];
     }
   }
 
-
-  Future<Map<String, dynamic>> getFilmScannersDetails(String tableName, String model) async {
+  Future<Map<String, dynamic>> getScannersDetails(String tableName, String model) async {
     final db = await database;
     try {
       var result = await db!.query(tableName, where: "model = ?", whereArgs: [model]);
@@ -72,12 +71,12 @@ class FilmScannersCatalogueDatabaseHelper {
         throw Exception('Model not found in the database.');
       }
     } catch (e) {
-      print("Error fetching scanners details for $model from $tableName: $e");
+      print("Error fetching Scanners details for $model from $tableName: $e");
       rethrow;
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmScannersModelsByBrand(String brand) async {
+  Future<List<Map<String, dynamic>>> getScannersModelsByBrand(String brand) async {
     final db = await database;
 
     if (db == null) {
@@ -88,7 +87,6 @@ class FilmScannersCatalogueDatabaseHelper {
     final result = await db.query(tableName, columns: ['model'], orderBy: 'model ASC');
     return result;
   }
-
 
   Future<void> close() async {
     if (_database != null) {

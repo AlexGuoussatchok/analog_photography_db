@@ -1,3 +1,4 @@
+import 'package:analog_photography_db/screens/inventory_collection_scanners_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:analog_photography_db/database_helpers/inventory_database_helper.dart';
@@ -155,7 +156,10 @@ class _InventoryScreenState extends State<InventoryScreen>
                     const InventoryCollectionProcessorsScreen(),
 
                     const InventoryCollectionDryersScreen(),
-                    ...List.generate(3, (index) => const Center(child: Text('Content for selected tab.'))),
+                    ...List.generate(1, (index) => const Center(child: Text('Content for selected tab.'))),
+
+                    const InventoryCollectionScannersScreen(),
+                    ...List.generate(1, (index) => const Center(child: Text('Content for selected tab.'))),
 
                   ],
                 ),
