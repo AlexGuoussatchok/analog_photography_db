@@ -8,6 +8,7 @@ import 'package:analog_photography_db/screens/inventory_collection_flashes_scree
 import 'package:analog_photography_db/screens/inventory_collection_meters_screen.dart';
 import 'package:analog_photography_db/screens/inventory_collection_processors_screen.dart';
 import 'package:analog_photography_db/screens/inventory_collection_dryers_screen.dart';
+import 'package:analog_photography_db/screens/inventory_collection_films_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({Key? key}) : super(key: key);
@@ -151,7 +152,9 @@ class _InventoryScreenState extends State<InventoryScreen>
                     const InventoryCollectionFlashesScreen(),
 
                     const InventoryCollectionMetersScreen(),
-                    ...List.generate(5, (index) => const Center(child: Text('Content for selected tab.'))),
+
+                    const InventoryCollectionFilmsScreen(),
+                    ...List.generate(4, (index) => const Center(child: Text('Content for selected tab.'))),
 
                     const InventoryCollectionProcessorsScreen(),
 

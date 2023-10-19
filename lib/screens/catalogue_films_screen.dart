@@ -32,7 +32,7 @@ class _CatalogueFilmsScreenState extends State<CatalogueFilmsScreen> {
 
   _loadFilmsNames(String brand) async {
     try {
-      var models = await FilmsCatalogueDatabaseHelper().getFilmsNames(brand);
+      var models = await FilmsCatalogueDatabaseHelper().getFilmsNamesByBrand(brand);
       setState(() {
         filmNames = models.map((e) => e['name'].toString()).toList();
       });
@@ -158,9 +158,14 @@ class _CatalogueFilmsScreenState extends State<CatalogueFilmsScreen> {
                   return ListTile(
                     title: Text(filmNames[index]),
                     onTap: () async {
-                      Map<String, dynamic> details = await FilmsCatalogueDatabaseHelper().getFilmsDetails(selectedBrand!, filmNames[index]);
-                      _showFilmDetails(context, details);
+                      Map<String, dynamic>? details = await FilmsCatalogueDatabaseHelper().getFilmDetailsByBrandAndName(selectedBrand!, filmNames[index]);
+                      if(details != null) {
+                        _showFilmDetails(context, details);
+                      } else {
+                        print('Error: Film details not found.');
+                      }
                     },
+
 
                   );
                 },

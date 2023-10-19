@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 
 class FilmsCatalogueDatabaseHelper {
   static const String dbName = 'films_catalogue.db';
-  static const _databaseVersion = 20231012;
+  static const _databaseVersion = 20231019;
   static Database? _database;
 
   static Future<Database?> get database async {
@@ -29,13 +29,6 @@ class FilmsCatalogueDatabaseHelper {
     }
   }
 
-  static final FilmsCatalogueDatabaseHelper _instance = FilmsCatalogueDatabaseHelper._privateConstructor();
-  factory FilmsCatalogueDatabaseHelper() {
-    return _instance;
-  }
-  FilmsCatalogueDatabaseHelper._privateConstructor();
-
-
   static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (newVersion > oldVersion) {
       Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -53,34 +46,22 @@ class FilmsCatalogueDatabaseHelper {
     try {
       return await db!.query('film_brands', columns: ['brand'], orderBy: 'brand ASC');
     } catch (e) {
-      print("Error fetching lens brands: $e");
+      print("Error fetching films brands: $e");
       return [];
     }
   }
 
-  Future<List<Map<String, dynamic>>> getFilmsNames(String brand) async {
+  Future<List<Map<String, dynamic>>> getFilmsNames(String tableName) async {
     final db = await database;
     try {
-      String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_films_catalogue';
-      return await db!.query(
-          tableName,
-          columns: ['name'],
-          orderBy: '''
-        CASE WHEN production_state = 'in production' THEN 1 
-             WHEN production_state IS NULL OR production_state = 'discontinued' THEN 2 
-             ELSE 3 
-        END, 
-        name ASC
-      '''
-      );
+      return await db!.query(tableName, columns: ['name'], orderBy: 'name ASC');
     } catch (e) {
-      print("Error fetching films names from $brand: $e");
+      print("Error fetching film names from $tableName: $e");
       return [];
     }
   }
 
-
-  Future<Map<String, dynamic>> getItemDetails(String tableName, String name) async {
+  Future<Map<String, dynamic>> getFilmsDetails(String tableName, String name) async {
     final db = await database;
     try {
       var result = await db!.query(tableName, where: "name = ?", whereArgs: [name]);
@@ -90,17 +71,43 @@ class FilmsCatalogueDatabaseHelper {
         throw Exception('Film name not found in the database.');
       }
     } catch (e) {
-      print("Error fetching item details for $name from $tableName: $e");
+      print("Error fetching film details for $name from $tableName: $e");
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> getFilmsDetails(String brand, String name) async {
-    String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_films_catalogue';
-    return await getItemDetails(tableName, name);
+  Future<List<Map<String, dynamic>>> getFilmsNamesByBrand(String brand) async {
+    final db = await database;
+
+    if (db == null) {
+      throw Exception("Database not initialized");
+    }
+
+    final tableName = brand.toLowerCase() + '_films_catalogue';
+    final result = await db.query(tableName, columns: ['name'], orderBy: 'name ASC');
+    return result;
   }
 
+  Future<Map<String, dynamic>?> getFilmDetailsByBrandAndName(String brand, String filmName) async {
+    final db = await database;
 
+    if (db == null) {
+      // Handle the null database case appropriately
+      throw Exception("Database not initialized!");
+    }
+    final tableName = "${brand}_films_catalogue";
+
+    final List<Map<String, dynamic>> result = await db.query(
+      tableName,
+      where: 'name = ?',
+      whereArgs: [filmName],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first;
+    }
+    return {};
+  }
 
   Future<void> close() async {
     if (_database != null) {
