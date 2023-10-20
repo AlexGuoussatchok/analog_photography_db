@@ -3,6 +3,11 @@ import 'package:analog_photography_db/database_helpers/inventory_collection/film
 import 'package:analog_photography_db/models/inventory_films.dart';
 import 'package:analog_photography_db/widgets/collection/films_list_item.dart';
 import 'package:analog_photography_db/database_helpers/films_catalogue_database_helper.dart';
+import 'package:intl/intl.dart';
+
+enum ExpirationOption { unknown, datePicker }
+
+
 
 class InventoryCollectionFilmsScreen extends StatefulWidget {
   const InventoryCollectionFilmsScreen({Key? key}) : super(key: key);
@@ -37,6 +42,10 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
 
     String? dialogSelectedBrand;
     List<String> dialogFilmsNames = [];
+
+    ExpirationOption? selectedExpirationOption;
+    DateTime? selectedDate;
+
 
     final brandController = TextEditingController();
     final namesController = TextEditingController();
@@ -152,10 +161,49 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       controller: isoController,
                       decoration: const InputDecoration(labelText: 'ISO'),
                     ),
-                    TextField(
-                      controller: expirationDateController,
-                      decoration: const InputDecoration(labelText: 'Film Expiration Date'),
+
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Film Expiration Date',
+                      ),
+                      isEmpty: selectedExpirationOption == null,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<ExpirationOption>(
+                          value: selectedExpirationOption,
+                          items: [
+                            DropdownMenuItem(
+                              value: ExpirationOption.unknown,
+                              child: Text('Unknown'),
+                            ),
+                            DropdownMenuItem(
+                              value: ExpirationOption.datePicker,
+                              child: Text(expirationDateController.text.isEmpty ? 'Select Date' : expirationDateController.text),
+                            ),
+                          ],
+                          onChanged: (ExpirationOption? newValue) async {
+                            if (newValue == ExpirationOption.datePicker) {
+                              DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: selectedDate ?? DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null) {
+                                selectedDate = pickedDate;
+                                expirationDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+                              }
+                            } else {
+                              selectedDate = null; // Clear the selected date when 'Unknown' is picked
+                              expirationDateController.text = ''; // Clear the displayed date
+                            }
+                            dialogSetState(() {
+                              selectedExpirationOption = newValue!;
+                            });
+                          },
+                        ),
+                      ),
                     ),
+
                     TextField(
                       controller: isExpiredController,
                       decoration: const InputDecoration(labelText: 'Is Expired?'),
