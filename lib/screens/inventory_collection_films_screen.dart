@@ -46,6 +46,11 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
     ExpirationOption? selectedExpirationOption;
     DateTime? selectedDate;
 
+    String? isExpiredValue;
+
+    int daysDifference(DateTime date1, DateTime date2) {
+      return date1.difference(date2).inDays;
+    }
 
     final brandController = TextEditingController();
     final namesController = TextEditingController();
@@ -164,50 +169,60 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
 
                     InputDecorator(
                       decoration: InputDecoration(
-                        labelText: 'Film Expiration Date',
+                        labelText: selectedExpirationOption == null ? 'Film Expiration Date' : null,
+                        hintText: selectedExpirationOption == null ? null : 'Film Expiration Date',
                       ),
-                      isEmpty: selectedExpirationOption == null,
+                      isEmpty: selectedExpirationOption == null,  // to determine if the dropdown is empty or not
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<ExpirationOption>(
                           value: selectedExpirationOption,
-                          items: [
-                            DropdownMenuItem(
+                          isDense: true,
+                          onChanged: (ExpirationOption? newValue) async {
+                            if (newValue == ExpirationOption.datePicker) {
+                              DateTime? date = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2101),
+                              );
+                              if (date != null) {
+                                selectedDate = date;
+                                expirationDateController.text = DateFormat('yyyy-MM-dd').format(date);
+                                if (date.isBefore(DateTime.now())) {
+                                  isExpiredValue = "Film Expired";
+                                } else {
+                                  isExpiredValue = "Not Expired (days left: ${daysDifference(date, DateTime.now())})";
+                                }
+                              }
+                            } else {
+                              selectedDate = null;
+                              isExpiredValue = "Unknown";
+                            }
+                            dialogSetState(() {});
+                          },
+                          items: const <DropdownMenuItem<ExpirationOption>>[
+                            DropdownMenuItem<ExpirationOption>(
                               value: ExpirationOption.unknown,
                               child: Text('Unknown'),
                             ),
-                            DropdownMenuItem(
+                            DropdownMenuItem<ExpirationOption>(
                               value: ExpirationOption.datePicker,
-                              child: Text(expirationDateController.text.isEmpty ? 'Select Date' : expirationDateController.text),
+                              child: Text('Select Date'),
                             ),
                           ],
-                          onChanged: (ExpirationOption? newValue) async {
-                            if (newValue == ExpirationOption.datePicker) {
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDate ?? DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2101),
-                              );
-                              if (pickedDate != null) {
-                                selectedDate = pickedDate;
-                                expirationDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-                              }
-                            } else {
-                              selectedDate = null; // Clear the selected date when 'Unknown' is picked
-                              expirationDateController.text = ''; // Clear the displayed date
-                            }
-                            dialogSetState(() {
-                              selectedExpirationOption = newValue!;
-                            });
-                          },
                         ),
                       ),
                     ),
 
-                    TextField(
-                      controller: isExpiredController,
-                      decoration: const InputDecoration(labelText: 'Is Expired?'),
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Is Expired?',
+                        contentPadding: EdgeInsets.symmetric(vertical: 10.0),
+                      ),
+                      child: Text(isExpiredValue ?? ''),
                     ),
+
+
                     TextField(
                       controller: quantityController,
                       decoration: const InputDecoration(labelText: 'Quantity'),
@@ -244,7 +259,7 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       type: typeController.text,
                       sizeType: sizeTypeController.text,
                       expirationDate: DateTime.tryParse(expirationDateController.text),
-                      isExpired: isExpiredController.text,
+                      isExpired: isExpiredValue,
                       quantity: quantity,
                       averagePrice: averagePrice,
                       comments: commentsController.text,
