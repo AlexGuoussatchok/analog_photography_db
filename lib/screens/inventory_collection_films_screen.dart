@@ -46,6 +46,9 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
     ExpirationOption? selectedExpirationOption;
     DateTime? selectedDate;
 
+    int? selectedYear;
+    int? selectedMonth;
+
     String? isExpiredValue;
 
     int daysDifference(DateTime date1, DateTime date2) {
@@ -169,50 +172,61 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
 
                     InputDecorator(
                       decoration: InputDecoration(
-                        labelText: selectedExpirationOption == null ? 'Film Expiration Date' : null,
-                        hintText: selectedExpirationOption == null ? null : 'Film Expiration Date',
+                        labelText: selectedYear == null ? 'Expiration Year' : null,
                       ),
-                      isEmpty: selectedExpirationOption == null,  // to determine if the dropdown is empty or not
+                      isEmpty: selectedYear == null,
                       child: DropdownButtonHideUnderline(
-                        child: DropdownButton<ExpirationOption>(
-                          value: selectedExpirationOption,
-                          isDense: true,
-                          onChanged: (ExpirationOption? newValue) async {
-                            if (newValue == ExpirationOption.datePicker) {
-                              DateTime? date = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime(2101),
-                              );
-                              if (date != null) {
-                                selectedDate = date;
-                                expirationDateController.text = DateFormat('yyyy-MM-dd').format(date);
-                                if (date.isBefore(DateTime.now())) {
-                                  isExpiredValue = "Film Expired";
-                                } else {
-                                  isExpiredValue = "Not Expired (days left: ${daysDifference(date, DateTime.now())})";
-                                }
-                              }
-                            } else {
-                              selectedDate = null;
-                              isExpiredValue = "Unknown";
-                            }
-                            dialogSetState(() {});
+                        child: DropdownButton<int>(
+                          value: selectedYear,
+                          onChanged: (int? newValue) {
+                            dialogSetState(() {
+                              selectedYear = newValue;
+                            });
                           },
-                          items: const <DropdownMenuItem<ExpirationOption>>[
-                            DropdownMenuItem<ExpirationOption>(
-                              value: ExpirationOption.unknown,
-                              child: Text('Unknown'),
-                            ),
-                            DropdownMenuItem<ExpirationOption>(
-                              value: ExpirationOption.datePicker,
-                              child: Text('Select Date'),
-                            ),
-                          ],
+                          items: List.generate(101, (index) => DateTime.now().year - 50 + index)  // List of years from 50 years ago to 50 years in the future
+                              .map((int year) {
+                            return DropdownMenuItem<int>(
+                              value: year,
+                              child: Text('$year'),
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),
+
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: selectedMonth == null ? 'Expiration Month' : null,
+                      ),
+                      isEmpty: selectedMonth == null,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int>(
+                          value: selectedMonth,
+                          onChanged: (int? newValue) {
+                            selectedMonth = newValue;
+                            if (selectedYear != null && selectedMonth != null) {
+                              DateTime expiration = DateTime(selectedYear!, selectedMonth!);
+                              expirationDateController.text = DateFormat('yyyy-MM').format(expiration);
+                              if (expiration.isBefore(DateTime.now())) {
+                                isExpiredValue = "Film Expired";
+                              } else {
+                                isExpiredValue = "Not Expired";
+                              }
+                            }
+                            dialogSetState(() {});
+                          },
+                          items: List.generate(12, (index) => index + 1) // List of months from 1 (January) to 12 (December)
+                              .map((int month) {
+                            return DropdownMenuItem<int>(
+                              value: month,
+                              child: Text(DateFormat('MMMM').format(DateTime(DateTime.now().year, month))), // Display month names
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+
+
 
                     InputDecorator(
                       decoration: InputDecoration(

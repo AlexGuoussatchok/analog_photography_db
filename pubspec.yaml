@@ -53,7 +53,10 @@ flutter:
     - assets/images/dryers/ilford/
 
 
+    - assets/images/films/adox/
+    - assets/images/films/agfa/
     - assets/images/films/tasma/
+
 
 
     - assets/images/flashes/canon/
