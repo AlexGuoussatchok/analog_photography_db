@@ -29,4 +29,17 @@ class FilmsDatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('films');
     return maps.map((filmsMap) => InventoryFilms.fromMap(filmsMap)).toList();
   }
+
+  static Future<void> deleteFilms(int id) async {
+    // Get a reference to the database
+    final db = await _initDatabase(); // Corrected this line
+
+    // Remove the film from the database
+    await db.delete(
+      'films', // table name
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
 }

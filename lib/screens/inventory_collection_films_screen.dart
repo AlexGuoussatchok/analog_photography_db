@@ -362,7 +362,12 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
           : ListView.builder(
         itemCount: _films.length,
         itemBuilder: (context, index) {
-          return FilmsListItem(films: _films[index]);
+          return FilmsListItem(
+            films: _films[index],
+            onDelete: () {
+              _loadFilms(); // reload the films after one is deleted
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
