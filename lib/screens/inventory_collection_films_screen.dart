@@ -7,8 +7,6 @@ import 'package:intl/intl.dart';
 
 enum ExpirationOption { unknown, datePicker }
 
-
-
 class InventoryCollectionFilmsScreen extends StatefulWidget {
   const InventoryCollectionFilmsScreen({Key? key}) : super(key: key);
 
@@ -43,17 +41,14 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
     String? dialogSelectedBrand;
     List<String> dialogFilmsNames = [];
 
-    ExpirationOption? selectedExpirationOption;
-    DateTime? selectedDate;
-
-    int? selectedYear;
+    int? selectedYear = DateTime.now().year;
     int? selectedMonth;
 
     String? isExpiredValue;
 
-    int daysDifference(DateTime date1, DateTime date2) {
-      return date1.difference(date2).inDays;
-    }
+    int filmQuantity = 1;
+
+
 
     final brandController = TextEditingController();
     final namesController = TextEditingController();
@@ -79,6 +74,8 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
         });
       }
     }
+
+
 
     showDialog(
       context: context,
@@ -183,7 +180,8 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                               selectedYear = newValue;
                             });
                           },
-                          items: List.generate(101, (index) => DateTime.now().year - 50 + index)  // List of years from 50 years ago to 50 years in the future
+                          items: List.generate(101, (index) => DateTime.now().year - 50 + index)
+                          // List of years from 50 years ago to 50 years in the future
                               .map((int year) {
                             return DropdownMenuItem<int>(
                               value: year,
@@ -226,25 +224,80 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       ),
                     ),
 
-
-
                     InputDecorator(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Is Expired?',
                         contentPadding: EdgeInsets.symmetric(vertical: 10.0),
                       ),
                       child: Text(isExpiredValue ?? ''),
                     ),
 
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Films quantity",
+                          style: TextStyle(fontSize: 16,),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              '$filmQuantity',
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (filmQuantity > 1) {
+                                  dialogSetState(() {
+                                    filmQuantity--;
+                                  });
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white, backgroundColor: Colors.grey,
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),                               ),
+                              child: const Text(
+                                "-",
+                                style: TextStyle(fontSize: 24), // Increased font size for "-"
+                              ),
+                            ),
+                            const SizedBox(width: 5), // Spacer for a little space between the buttons
+                            ElevatedButton(
+                              onPressed: () {
+                                dialogSetState(() {
+                                  filmQuantity++;
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white, backgroundColor: Colors.grey, // Text color
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), // Button size
+                              ),
+                              child: const Text(
+                                "+",
+                                style: TextStyle(fontSize: 24), // Increased font size for "+"
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
 
                     TextField(
-                      controller: quantityController,
-                      decoration: const InputDecoration(labelText: 'Quantity'),
-                    ),
-                    TextField(
                       controller: averagePriceController,
-                      decoration: const InputDecoration(labelText: 'Average Price'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Average Price',
+                        suffixText: '€',
+                        hintText: 'Enter the price (per piece)',
+                      ),
+                      onChanged: (value) {
+                        // Handle changes to the input, such as updating a variable or model.
+                      },
                     ),
+
+
                     TextField(
                       controller: commentsController,
                       decoration: const InputDecoration(labelText: 'Comments'),
@@ -261,8 +314,10 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                 ),
                 TextButton(
                   onPressed: () async {
-                    int? quantity = int.tryParse(quantityController.text);
-                    double? averagePrice = double.tryParse(averagePriceController.text);
+                    double? parsedPrice = double.tryParse(averagePriceController.text.trim());
+                    if (averagePriceController.text.isEmpty) {
+                      parsedPrice = null;
+                    }
                     if (dialogSelectedBrand == null || dialogSelectedBrand!.isEmpty) {
                       // Handle error
                       return;
@@ -272,10 +327,13 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       name: namesController.text,
                       type: typeController.text,
                       sizeType: sizeTypeController.text,
-                      expirationDate: DateTime.tryParse(expirationDateController.text),
+                      iso: isoController.text.isEmpty ? null : isoController.text,
+                      expirationDate: selectedYear != null && selectedMonth != null
+                          ? DateTime(selectedYear!, selectedMonth!)
+                          : null,
                       isExpired: isExpiredValue,
-                      quantity: quantity,
-                      averagePrice: averagePrice,
+                      quantity: filmQuantity, // Use filmQuantity directly
+                      averagePrice: parsedPrice,
                       comments: commentsController.text,
                     );
                     await FilmsDatabaseHelper.insertFilms(newFilms);

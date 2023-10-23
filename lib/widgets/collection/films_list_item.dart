@@ -21,32 +21,32 @@ class FilmsListItem extends StatelessWidget {
               children: [
                 const SizedBox(height: 10),
                 if (films.type != null)
-                  Text('Serial Number: ${films.type}',
+                  Text('Film type: ${films.type}',
                       style: const TextStyle(fontSize: 20)),
 
                 const SizedBox(height: 10),
                 if (films.sizeType != null)
-                  Text('Serial Number: ${films.sizeType}',
+                  Text('Size type: ${films.sizeType}',
                       style: const TextStyle(fontSize: 20)),
 
                 const SizedBox(height: 10),
                 if (films.iso != null)
-                  Text('Serial Number: ${films.iso}',
+                  Text('ISO: ${films.iso}',
                       style: const TextStyle(fontSize: 20)),
 
                 const SizedBox(height: 10),
                 if (films.expirationDate != null)
-                  Text('Purchase Date: ${DateFormat('yyyy-MM-dd').format(films.expirationDate!)}',
+                  Text('Expiration date: ${DateFormat('yyyy-MM-dd').format(films.expirationDate!)}',
                       style: const TextStyle(fontSize: 20)),
 
                 const SizedBox(height: 10),
                 if (films.isExpired != null)
-                  Text('Price Paid: ${films.isExpired}',
+                  Text('Is film expired?: ${films.isExpired}',
                       style: const TextStyle(fontSize: 20)),
 
                 const SizedBox(height: 10),
                 if (films.quantity != null)
-                  Text('Condition: ${films.quantity}',
+                  Text('Quantity: ${films.quantity}',
                       style: const TextStyle(fontSize: 20)),
 
                 const SizedBox(height: 10),
@@ -74,13 +74,19 @@ class FilmsListItem extends StatelessWidget {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text("${films.brand} ${films.name}"),
-      subtitle: Text('expiration date: ${films.expirationDate}'),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // Align the text to the left
+        children: [
+          Text('Expiration Date: ${films.expirationDate != null ? DateFormat('yyyy-MM').format(films.expirationDate!) : 'Not set'}'),
+          Text('Quantity: ${films.quantity}'),
+        ],
+      ),
+
+
       onTap: () {
         _showFilmsDetails(context, films);
       },
