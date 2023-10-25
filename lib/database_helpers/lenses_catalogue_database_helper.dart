@@ -15,6 +15,10 @@ class LensesCatalogueDatabaseHelper {
     return _database;
   }
 
+  String generateTableName(String brand) {
+    return '${brand.toLowerCase().replaceAll(' ', '_')}_lenses_catalogue';
+  }
+
   static Future<Database> initializeDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, dbName);
@@ -60,13 +64,14 @@ class LensesCatalogueDatabaseHelper {
   Future<List<Map<String, dynamic>>> getLensesModels(String brand) async {
     final db = await database;
     try {
-      String tableName = '${brand.toLowerCase().replaceAll(' ', '_')}_lenses_catalogue';
+      String tableName = generateTableName(brand);
       return await db!.query(tableName, columns: ['model'], orderBy: 'model ASC');
     } catch (e) {
       print("Error fetching lens models from $brand: $e");
       return [];
     }
   }
+
 
   Future<List<Map<String, dynamic>>> getLensesModelsByBrand(String brand) async {
     final db = await database;

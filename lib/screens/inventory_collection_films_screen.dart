@@ -48,8 +48,6 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
 
     int filmQuantity = 1;
 
-
-
     final brandController = TextEditingController();
     final namesController = TextEditingController();
     final typeController = TextEditingController();
@@ -74,7 +72,6 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
         });
       }
     }
-
 
 
     showDialog(

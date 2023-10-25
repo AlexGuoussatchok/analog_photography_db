@@ -32,9 +32,8 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
 
   _loadLensesModels(String brand) async {
     try {
-      String tableName = '${brand.toLowerCase()}_lenses_catalogue';
-      var models = await LensesCatalogueDatabaseHelper().getLensesModels(
-          tableName);
+      String tableName = LensesCatalogueDatabaseHelper().generateTableName(brand);
+      var models = await LensesCatalogueDatabaseHelper().getLensesModels(brand);
       setState(() {
         lensesModels = models.map((e) => e['model'].toString()).toList();
       });
@@ -42,6 +41,7 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
       print(e);
     }
   }
+
 
   void _showLensesDetails(BuildContext context, Map<String, dynamic> details) {
     List<String> excludedColumns = ['id', 'model'];
@@ -140,7 +140,7 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
                   items: lensesBrands.map((String brand) {
                     return DropdownMenuItem<String>(
                       value: brand,
-                      child: Text(brand),
+                      child: Text(brand.replaceAll('_', ' ')),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -162,11 +162,10 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
                   return ListTile(
                     title: Text(lensesModels[index]),
                     onTap: () async {
-                      String tableName = '${selectedBrand!.toLowerCase()}_lenses_catalogue';
-                      Map<String, dynamic> details = await LensesCatalogueDatabaseHelper().getLensesDetails(tableName, lensesModels[index]);
-
+                      Map<String, dynamic> details = await LensesCatalogueDatabaseHelper().getLensesDetails(selectedBrand!, lensesModels[index]);
                       _showLensesDetails(context, details);
                     },
+
                   );
                 },
               ),
