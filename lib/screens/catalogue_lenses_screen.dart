@@ -42,7 +42,6 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
     }
   }
 
-
   void _showLensesDetails(BuildContext context, Map<String, dynamic> details) {
     List<String> excludedColumns = ['id', 'model'];
 
@@ -111,9 +110,6 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
     );
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,7 +166,6 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
                 },
               ),
             )
-
           ],
         ),
       ),

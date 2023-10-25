@@ -42,12 +42,15 @@ flutter:
     - assets/images/cameras/canon/
     - assets/images/cameras/fuji/
     - assets/images/cameras/konica/
+    - assets/images/cameras/kyocera/
     - assets/images/cameras/lomo/
+    - assets/images/cameras/minox/
     - assets/images/cameras/nikon/
     - assets/images/cameras/olympus/
     - assets/images/cameras/pentax/
     - assets/images/cameras/ricoh/
     - assets/images/cameras/samsung/
+    - assets/images/cameras/yashica/
 
 
     - assets/images/dryers/ilford/
