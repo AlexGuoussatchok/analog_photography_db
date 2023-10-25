@@ -48,7 +48,7 @@ class _CatalogueProcessorsScreenState extends State<CatalogueProcessorsScreen> {
 
     String brand = selectedBrand!.toLowerCase();
     String imageId = details['id'].toString();
-    String imagePath = 'assets/images/processors/$brand/$imageId.JPG';
+    String imagePath = 'assets/images/processors/$brand/$imageId.jpg';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
     // Exclude entries that are null or in the excludedColumns list

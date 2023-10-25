@@ -53,6 +53,7 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
     final typeController = TextEditingController();
     final sizeTypeController = TextEditingController();
     final isoController = TextEditingController();
+    final framesNumberController = TextEditingController(text: '36');
     final expirationDateController = TextEditingController();
     final isExpiredController = TextEditingController();
     final quantityController = TextEditingController();
@@ -162,6 +163,12 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                     TextField(
                       controller: isoController,
                       decoration: const InputDecoration(labelText: 'ISO'),
+                    ),
+
+                    TextField(
+                      controller: framesNumberController,
+                      decoration: const InputDecoration(labelText: 'Frames Number'),
+                      keyboardType: TextInputType.number,
                     ),
 
                     InputDecorator(
@@ -325,6 +332,7 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       type: typeController.text,
                       sizeType: sizeTypeController.text,
                       iso: isoController.text.isEmpty ? null : isoController.text,
+                      framesNumber: framesNumberController.text,
                       expirationDate: selectedYear != null && selectedMonth != null
                           ? DateTime(selectedYear!, selectedMonth!)
                           : null,

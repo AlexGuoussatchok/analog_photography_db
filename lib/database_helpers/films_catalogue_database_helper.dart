@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 
 class FilmsCatalogueDatabaseHelper {
   static const String dbName = 'films_catalogue.db';
-  static const _databaseVersion = 20231019;
+  static const _databaseVersion = 20231020;
   static Database? _database;
 
   static Future<Database?> get database async {

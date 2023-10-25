@@ -78,6 +78,7 @@ final Map<String, List<TableDefinition>> databaseDefinitions = {
             type TEXT,
             size_type TEXT, 
             ISO TEXT,
+            frames_number TEXT,
             expiration_date TEXT,
             is_expired TEXT,
             quantity INTEGER,

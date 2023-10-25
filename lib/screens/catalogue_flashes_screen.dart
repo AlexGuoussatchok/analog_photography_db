@@ -48,7 +48,7 @@ class _CatalogueFlashesScreenState extends State<CatalogueFlashesScreen> {
 
     String brand = selectedBrand!.toLowerCase();
     String imageId = details['id'].toString();
-    String imagePath = 'assets/images/flashes/$brand/$imageId.JPG';
+    String imagePath = 'assets/images/flashes/$brand/$imageId.jpg';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
     // Exclude entries that are null or in the excludedColumns list

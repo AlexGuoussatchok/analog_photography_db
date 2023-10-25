@@ -33,8 +33,8 @@ class _CatalogueMetersScreenState extends State<CatalogueMetersScreen> {
   _loadMetersModels(String brands) async {
     try {
       String tableName = '${brands.toLowerCase()}_meters_catalogue';
-      var models = await MetersCatalogueDatabaseHelper().getMetersModels(
-          tableName);
+      var models = await MetersCatalogueDatabaseHelper().getMetersModels(tableName);
+
       setState(() {
         metersModels = models.map((e) => e['model'].toString()).toList();
       });
@@ -43,6 +43,7 @@ class _CatalogueMetersScreenState extends State<CatalogueMetersScreen> {
     }
   }
 
+
   void _showItemDetails(BuildContext context, Map<String, dynamic> details) {
     List<String> excludedColumns = ['id', 'model'];
 
@@ -50,7 +51,7 @@ class _CatalogueMetersScreenState extends State<CatalogueMetersScreen> {
     String imageId = details['id'].toString();
 
     // Modify the imagePath for lenses
-    String imagePath = 'assets/images/meters/$brand/$imageId.JPG';
+    String imagePath = 'assets/images/meters/$brand/$imageId.jpg';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
     // Exclude entries that are null or in the excludedColumns list
@@ -162,9 +163,11 @@ class _CatalogueMetersScreenState extends State<CatalogueMetersScreen> {
                   return ListTile(
                     title: Text(metersModels[index]),
                     onTap: () async {
-                      var lensDetails = await MetersCatalogueDatabaseHelper().getMetersDetails(selectedBrand!, metersModels[index]);
+                      String tableName = '${selectedBrand!.toLowerCase()}_meters_catalogue';
+                      var lensDetails = await MetersCatalogueDatabaseHelper().getMetersDetails(tableName, metersModels[index]);
                       _showItemDetails(context, lensDetails);
                     },
+
                   );
                 },
               ),

@@ -48,7 +48,7 @@ class _CatalogueLensesScreenState extends State<CatalogueLensesScreen> {
 
     String brand = selectedBrand!.toLowerCase();
     String imageId = details['id'].toString();
-    String imagePath = 'assets/images/lenses/$brand/$imageId.JPG';
+    String imagePath = 'assets/images/lenses/$brand/$imageId.jpg';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
     // Exclude entries that are null or in the excludedColumns list

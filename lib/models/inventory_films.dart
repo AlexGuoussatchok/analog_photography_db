@@ -7,6 +7,7 @@ class InventoryFilms {
   String type;
   String sizeType;
   String? iso;
+  String? framesNumber;
   DateTime? expirationDate;
   String? isExpired;
   int? quantity;
@@ -20,6 +21,7 @@ class InventoryFilms {
     required this.type,
     required this.sizeType,
     this.iso,
+    this.framesNumber,
     this.expirationDate,
     this.isExpired,
     this.quantity,
@@ -35,6 +37,7 @@ class InventoryFilms {
       'type': type,
       'size_type': sizeType,
       'ISO': iso,
+      'frames_number': framesNumber,
       'expiration_date': expirationDate != null ? DateFormat('yyyy-MM-dd').format(expirationDate!) : null,
       'is_expired': isExpired,
       'quantity': quantity,
@@ -51,6 +54,7 @@ class InventoryFilms {
       type: map['type'],
       sizeType: map['size_type'],
       iso: map['ISO'],
+      framesNumber: map['frames_number'],
       expirationDate: map['expiration_date'] != null ? DateFormat('yyyy-MM-dd').parse(map['expiration_date']) : null,
       isExpired: map['is_expired'],
       quantity: map['quantity'],
