@@ -10,72 +10,68 @@ class FilmsListItem extends StatelessWidget {
   const FilmsListItem({Key? key, required this.films, required this.onDelete}) : super(key: key);
 
 
-  void _showFilmsDetails(BuildContext context, InventoryFilms films) {
+  void _showFilmsDetails(BuildContext context, Map<String, dynamic> details) {
+    List<String> excludedColumns = ['id'];
+
+    List<Widget> detailWidgets = details.entries.where((entry) =>
+    entry.value != null &&
+        entry.value.toString().isNotEmpty &&
+        !excludedColumns.contains(entry.key)
+    ).toList().asMap().entries.map((mapEntry) {
+      int index = mapEntry.key;
+      MapEntry<String, dynamic> entry = mapEntry.value;
+
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 8.0),
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade400),
+          color: index.isEven ? Colors.grey.shade100 : Colors.white,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    entry.key.replaceAll('_', ' '),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ), // The column name
+                  const SizedBox(height: 4.0),
+                  Text(entry.value.toString()), // The value for that column
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("${films.brand} ${films.name}"),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
-          height: MediaQuery.of(context).size.height * 0.5, // 50% of screen height
-          child: SingleChildScrollView(
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                if (films.type != null)
-                  Text('Film type: ${films.type}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.sizeType != null)
-                  Text('Size type: ${films.sizeType}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.iso != null)
-                  Text('ISO: ${films.iso}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.expirationDate != null)
-                  Text('Expiration date: ${DateFormat('yyyy-MM-dd').format(films.expirationDate!)}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.isExpired != null)
-                  Text('Is film expired?: ${films.isExpired}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.quantity != null)
-                  Text('Quantity: ${films.quantity}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.averagePrice != null)
-                  Text('Average Price: \$${films.averagePrice}',
-                      style: const TextStyle(fontSize: 20)),
-
-                const SizedBox(height: 10),
-                if (films.comments != null)
-                  Text('Comments: ${films.comments}',
-                      style: const TextStyle(fontSize: 20)),
-              ],
+              children: detailWidgets,
             ),
           ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text("Close"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +109,7 @@ class FilmsListItem extends StatelessWidget {
         ],
       ),
       onTap: () {
-        _showFilmsDetails(context, films);
+        _showFilmsDetails(context, films.toMap());
       },
     );
   }
