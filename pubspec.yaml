@@ -29,6 +29,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/databases/cameras_catalogue.db
+    - assets/databases/chemicals_catalogue.db
     - assets/databases/dryers_catalogue.db
     - assets/databases/exposure_meters_catalogue.db
     - assets/databases/films_catalogue.db
@@ -44,6 +45,7 @@ flutter:
     - assets/images/cameras/konica/
     - assets/images/cameras/kyocera/
     - assets/images/cameras/lomo/
+    - assets/images/cameras/minolta/
     - assets/images/cameras/minox/
     - assets/images/cameras/nikon/
     - assets/images/cameras/olympus/
@@ -77,6 +79,9 @@ flutter:
 
 
     - assets/images/scanners/minolta/
+
+    - assets/developers/
+    - assets/fixers/
 
 
 
