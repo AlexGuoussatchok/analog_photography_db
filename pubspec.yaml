@@ -82,8 +82,8 @@ flutter:
 
     - assets/images/scanners/minolta/
 
-    - assets/developers/
-    - assets/fixers/
+    - assets/texts/developer/
+    - assets/texts/fixer/
 
 
 

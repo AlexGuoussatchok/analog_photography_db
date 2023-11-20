@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:analog_photography_db/database_helpers/chemicals_catalogue_database_helper.dart';
 
 class CatalogueChemicalsScreen extends StatefulWidget {
@@ -30,11 +31,20 @@ class _CatalogueChemicalsScreenState extends State<CatalogueChemicalsScreen> wit
     }
   }
 
-  void _showChemicalDetails(BuildContext context, Map<String, dynamic> chemical, String type) {
+  Future<String> loadChemicalText(String type, int id) async {
+    try {
+      final path = 'assets/texts/$type/$id.txt';
+      return await rootBundle.loadString(path);
+    } catch (e) {
+      print("Error loading text file: $e");
+      return "Description not available.";
+    }
+  }
+
+  void _showChemicalDetails(BuildContext context, Map<String, dynamic> chemical, String type) async {
     String folder = type == 'developer' ? 'developers' : 'fixers';
     String imagePath = 'assets/images/$folder/${chemical['id'].toString()}.jpg'; // Adjust file extension as needed
-
-    print('Image path: $imagePath');
+    String chemicalText = await loadChemicalText(type, chemical['id']);
 
     showDialog(
       context: context,
@@ -48,7 +58,8 @@ class _CatalogueChemicalsScreenState extends State<CatalogueChemicalsScreen> wit
                   return const Text('Image not available');
                 }),
                 Text(chemical[type]), // Display the chemical name
-                // ... Add more details if needed ...
+                const SizedBox(height: 10),
+                Text(chemicalText), // Display the text from the file
               ],
             ),
           ),
@@ -64,6 +75,7 @@ class _CatalogueChemicalsScreenState extends State<CatalogueChemicalsScreen> wit
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,11 +107,12 @@ class _CatalogueChemicalsScreenState extends State<CatalogueChemicalsScreen> wit
         var chemical = chemicals[index];
         return ListTile(
           title: Text(chemical[type]),
-          onTap: () => _showChemicalDetails(context, chemical, 'developer')
+          onTap: () => _showChemicalDetails(context, chemical, type), // Pass the correct type
         );
       },
     );
   }
+
 
   @override
   void dispose() {
