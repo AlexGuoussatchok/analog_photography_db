@@ -98,7 +98,7 @@ class CatalogueScreen extends StatelessWidget {
               }),
               _catalogueButton('Photochemistry', () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CataloguePhotochemistryScreen()));
+                    MaterialPageRoute(builder: (context) => const CatalogueChemicalsScreen()));
               }),
             ],
           ),

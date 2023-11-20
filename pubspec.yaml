@@ -54,6 +54,8 @@ flutter:
     - assets/images/cameras/samsung/
     - assets/images/cameras/yashica/
 
+    - assets/images/developers/
+
 
     - assets/images/dryers/ilford/
 
