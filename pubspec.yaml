@@ -30,6 +30,7 @@ flutter:
   assets:
     - assets/databases/cameras_catalogue.db
     - assets/databases/chemicals_catalogue.db
+    - assets/databases/dev_chart.db
     - assets/databases/dryers_catalogue.db
     - assets/databases/exposure_meters_catalogue.db
     - assets/databases/films_catalogue.db
