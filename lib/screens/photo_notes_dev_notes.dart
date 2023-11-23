@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:analog_photography_db/database_helpers/my_notes_database_helper.dart';
+import 'package:intl/intl.dart';
+
 
 class DevelopingNotesScreen extends StatefulWidget {
   const DevelopingNotesScreen({super.key});
@@ -18,7 +20,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
   }
 
   void _showAddNoteDialog(BuildContext context) {
-    final dateController = TextEditingController();
+    final dateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
     final filmNumberController = TextEditingController();
     final filmNameController = TextEditingController();
     final filmTypeController = TextEditingController();
@@ -34,6 +36,21 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     final temperatureController = TextEditingController();
     final commentsController = TextEditingController();
 
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1965), // Adjust as needed
+        lastDate: DateTime(2055),  // Adjust as needed
+      );
+      if (picked != null && picked != DateTime.now()) {
+        setState(() {
+          dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        });
+      }
+    }
+
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -42,10 +59,15 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
           content: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                TextField(
-                  controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Date',
+                InkWell(
+                  onTap: () => _selectDate(context),
+                  child: IgnorePointer(
+                    child: TextField(
+                      controller: dateController,
+                      decoration: const InputDecoration(
+                        labelText: 'Date',
+                      ),
+                    ),
                   ),
                 ),
                 TextField(
