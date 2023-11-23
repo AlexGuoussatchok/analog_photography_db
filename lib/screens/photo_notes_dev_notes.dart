@@ -18,8 +18,21 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
   }
 
   void _showAddNoteDialog(BuildContext context) {
+    final dateController = TextEditingController();
+    final filmNumberController = TextEditingController();
     final filmNameController = TextEditingController();
     final filmTypeController = TextEditingController();
+    final filmSizeController = TextEditingController();
+    final filmExpiredController = TextEditingController();
+    final filmExpDateController = TextEditingController();
+    final cameraController = TextEditingController();
+    final lensesController = TextEditingController();
+    final developerController = TextEditingController();
+    final labController = TextEditingController();
+    final dilutionController = TextEditingController();
+    final devTimeController = TextEditingController();
+    final temperatureController = TextEditingController();
+    final commentsController = TextEditingController();
 
     showDialog(
       context: context,
@@ -30,6 +43,18 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
             child: Column(
               children: <Widget>[
                 TextField(
+                  controller: dateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Date',
+                  ),
+                ),
+                TextField(
+                  controller: filmNumberController,
+                  decoration: const InputDecoration(
+                    labelText: 'Film Number',
+                  ),
+                ),
+                TextField(
                   controller: filmNameController,
                   decoration: const InputDecoration(
                     labelText: 'Film Name',
@@ -39,6 +64,72 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   controller: filmTypeController,
                   decoration: const InputDecoration(
                     labelText: 'Film Type',
+                  ),
+                ),
+                TextField(
+                  controller: filmSizeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Film Size',
+                  ),
+                ),
+                TextField(
+                  controller: filmExpiredController,
+                  decoration: const InputDecoration(
+                    labelText: 'Film Expired?',
+                  ),
+                ),
+                TextField(
+                  controller: filmExpDateController,
+                  decoration: const InputDecoration(
+                    labelText: 'Film Expiration Date',
+                  ),
+                ),
+                TextField(
+                  controller: cameraController,
+                  decoration: const InputDecoration(
+                    labelText: 'Camera',
+                  ),
+                ),
+                TextField(
+                  controller: lensesController,
+                  decoration: const InputDecoration(
+                    labelText: 'Lenses',
+                  ),
+                ),
+                TextField(
+                  controller: developerController,
+                  decoration: const InputDecoration(
+                    labelText: 'Developer',
+                  ),
+                ),
+                TextField(
+                  controller: labController,
+                  decoration: const InputDecoration(
+                    labelText: 'Lab',
+                  ),
+                ),
+                TextField(
+                  controller: dilutionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Dilution',
+                  ),
+                ),
+                TextField(
+                  controller: devTimeController,
+                  decoration: const InputDecoration(
+                    labelText: 'Dev Time',
+                  ),
+                ),
+                TextField(
+                  controller: temperatureController,
+                  decoration: const InputDecoration(
+                    labelText: 'Temperature',
+                  ),
+                ),
+                TextField(
+                  controller: commentsController,
+                  decoration: const InputDecoration(
+                    labelText: 'Comments',
                   ),
                 ),
               ],
@@ -53,9 +144,21 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
               child: const Text('Add'),
               onPressed: () async {
                 await MyNotesDatabaseHelper().insertDevelopingNote({
+                  'date': dateController.text,
+                  'film_number': filmNumberController.text,
                   'film_name': filmNameController.text,
                   'film_type': filmTypeController.text,
-                  // Populate other fields accordingly
+                  'film_size': filmSizeController.text,
+                  'film_expired': filmExpiredController.text,
+                  'film_exp_date': filmExpDateController.text,
+                  'camera': cameraController.text,
+                  'lenses': lensesController.text,
+                  'developer': developerController.text,
+                  'lab': labController.text,
+                  'dilution': dilutionController.text,
+                  'dev_time': devTimeController.text,
+                  'temp': temperatureController.text,
+                  'comments': commentsController.text,
                 });
                 setState(() {
                   _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
@@ -77,8 +180,8 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddNoteDialog(context),
-        child: const Icon(Icons.add),
         tooltip: 'Add Note',
+        child: const Icon(Icons.add),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _notesFuture,
