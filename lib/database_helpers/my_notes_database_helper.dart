@@ -30,6 +30,7 @@ class MyNotesDatabaseHelper {
         film_name TEXT,
         film_type TEXT,
         film_size TEXT,
+        ISO TEXT,
         film_expired TEXT,
         film_exp_date TEXT,
         camera TEXT,

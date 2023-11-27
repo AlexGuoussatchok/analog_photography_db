@@ -26,6 +26,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     final filmNameController = TextEditingController();
     final filmTypeController = TextEditingController();
     final filmSizeController = TextEditingController();
+    final filmISOController = TextEditingController();
     final filmExpiredController = TextEditingController();
     final filmExpDateController = TextEditingController();
     final cameraController = TextEditingController();
@@ -41,8 +42,8 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
       final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime(1965), // Adjust as needed
-        lastDate: DateTime(2055),  // Adjust as needed
+        firstDate: DateTime(1965),
+        lastDate: DateTime(2055),
       );
       if (picked != null && picked != DateTime.now()) {
         setState(() {
@@ -94,6 +95,12 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   controller: filmSizeController,
                   decoration: const InputDecoration(
                     labelText: 'Film Size',
+                  ),
+                ),
+                TextField(
+                  controller: filmISOController,
+                  decoration: const InputDecoration(
+                    labelText: 'ISO',
                   ),
                 ),
                 TextField(
@@ -173,6 +180,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   'film_name': filmNameController.text,
                   'film_type': filmTypeController.text,
                   'film_size': filmSizeController.text,
+                  'iso': filmISOController.text,
                   'film_expired': filmExpiredController.text,
                   'film_exp_date': filmExpDateController.text,
                   'camera': cameraController.text,
