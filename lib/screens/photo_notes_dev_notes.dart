@@ -19,9 +19,10 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
   }
 
-  void _showAddNoteDialog(BuildContext context) {
+  Future<void> _showAddNoteDialog(BuildContext context) async {
     final dateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
-    final filmNumberController = TextEditingController();
+    final maxFilmNumber = await MyNotesDatabaseHelper().getMaxFilmNumber();
+    final filmNumberController = TextEditingController(text: '${maxFilmNumber + 1}');
     final filmNameController = TextEditingController();
     final filmTypeController = TextEditingController();
     final filmSizeController = TextEditingController();
@@ -75,6 +76,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Film Number',
                   ),
+                  keyboardType: TextInputType.number, // Set the keyboard type to numeric
                 ),
                 TextField(
                   controller: filmNameController,

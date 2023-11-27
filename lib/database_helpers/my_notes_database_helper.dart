@@ -69,5 +69,13 @@ class MyNotesDatabaseHelper {
     );
   }
 
+  Future<int> getMaxFilmNumber() async {
+    final db = await database;
+    final result = await db.rawQuery('SELECT MAX(film_number) as max_number FROM my_film_dev_notes');
+    if (result.isNotEmpty && result.first['max_number'] != null) {
+      return int.tryParse(result.first['max_number'].toString()) ?? 0;
+    }
+    return 0;
+  }
 
 }
