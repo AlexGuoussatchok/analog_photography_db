@@ -80,7 +80,7 @@ class FilmsListItem extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start, // Align the text to the left
         children: [
-          Text('Expiration Date: ${films.expirationDate != null ? DateFormat('yyyy-MM').format(films.expirationDate!) : 'Not set'}'),
+          Text('Expiration Date: ${films.expirationDate ?? 'Not set'}'),
           Text('Quantity: ${films.quantity}'),
         ],
       ),

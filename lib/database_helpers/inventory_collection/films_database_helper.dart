@@ -32,7 +32,7 @@ class FilmsDatabaseHelper {
 
   static Future<void> deleteFilms(int id) async {
     // Get a reference to the database
-    final db = await _initDatabase(); // Corrected this line
+    final db = await _initDatabase();
 
     // Remove the film from the database
     await db.delete(
@@ -48,4 +48,25 @@ class FilmsDatabaseHelper {
     return maps.map((filmMap) => "${filmMap['brand']} ${filmMap['name']}").toList();
   }
 
+  static Future<Map<String, String>> getFilmDetails(String brand, String name) async {
+    final db = await _initDatabase();
+    final List<Map<String, dynamic>> maps = await db.query(
+      'films',
+      where: 'brand = ? AND name = ?',
+      whereArgs: [brand, name],
+    );
+    if (maps.isNotEmpty) {
+      var film = maps.first;
+      // Map the database columns to the input fields
+      return {
+        'filmType': film['type'] ?? '',
+        'filmSize': film['size_type'] ?? '',
+        'iso': film['ISO'] ?? '',
+        'filmExpired': film['is_expired'] ?? '',
+        'filmExpDate': film['expiration_date'] ?? '',
+        // Add other fields as needed
+      };
+    }
+    return {}; // Return an empty map if no film is found
+  }
 }

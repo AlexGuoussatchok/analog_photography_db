@@ -8,7 +8,7 @@ class InventoryFilms {
   String sizeType;
   String? iso;
   String? framesNumber;
-  DateTime? expirationDate;
+  String? expirationDate;
   String? isExpired;
   int? quantity;
   double? averagePrice;
@@ -38,7 +38,7 @@ class InventoryFilms {
       'size_type': sizeType,
       'ISO': iso,
       'frames_number': framesNumber,
-      'expiration_date': expirationDate != null ? DateFormat('yyyy-MM-dd').format(expirationDate!) : null,
+      'expiration_date': expirationDate,
       'is_expired': isExpired,
       'quantity': quantity,
       'average_price': averagePrice,
@@ -55,7 +55,7 @@ class InventoryFilms {
       sizeType: map['size_type'],
       iso: map['ISO'],
       framesNumber: map['frames_number'],
-      expirationDate: map['expiration_date'] != null ? DateFormat('yyyy-MM-dd').parse(map['expiration_date']) : null,
+      expirationDate: map['expiration_date'],
       isExpired: map['is_expired'],
       quantity: map['quantity'],
       averagePrice: map['average_price'],

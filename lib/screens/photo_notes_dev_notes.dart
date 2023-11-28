@@ -94,13 +94,30 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                 DropdownButtonFormField<String>(
                   value: selectedFilmName,
                   decoration: const InputDecoration(labelText: 'Select Film Name'),
-                  onChanged: (String? newValue) {
+                  onChanged: (String? newValue) async {
                     setState(() {
                       selectedFilmName = newValue;
-                      // Auto-populate other fields based on the selected film name
-                      // Add your logic here to fetch and set data for other fields
                     });
+                    if (newValue != null) {
+                      var parts = newValue.split(' ');
+                      var brand = parts[0];
+                      var name = parts.sublist(1).join(' ');
+
+                      // Fetch film details
+                      var filmDetails = await FilmsDatabaseHelper.getFilmDetails(brand, name);
+
+                      // Update other fields
+                      setState(() {
+                        filmTypeController.text = filmDetails['filmType'] ?? '';
+                        filmSizeController.text = filmDetails['filmSize'] ?? '';
+                        filmISOController.text = filmDetails['iso'] ?? '';
+                        filmExpiredController.text = filmDetails['filmExpired'] ?? '';
+                        filmExpDateController.text = filmDetails['filmExpDate'] ?? '';
+                        // Update other fields as needed
+                      });
+                    }
                   },
+
                   items: filmNames.map<DropdownMenuItem<String>>((String name) {
                     return DropdownMenuItem<String>(
                       value: name,

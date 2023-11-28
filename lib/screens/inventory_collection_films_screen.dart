@@ -208,7 +208,8 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                             selectedMonth = newValue;
                             if (selectedYear != null && selectedMonth != null) {
                               DateTime expiration = DateTime(selectedYear!, selectedMonth!);
-                              expirationDateController.text = DateFormat('yyyy-MM').format(expiration);
+                              expirationDateController.text = DateFormat('yyyy-MM').format(expiration); // Changed to format as 'YYYY-MM'
+                              print("Formatted Expiration Date: ${expirationDateController.text}"); // Debug print
                               if (expiration.isBefore(DateTime.now())) {
                                 isExpiredValue = "Film Expired";
                               } else {
@@ -326,6 +327,7 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       // Handle error
                       return;
                     }
+                    print("2. Expiration Date to Save: ${expirationDateController.text}"); // Debug print
                     final newFilms = InventoryFilms(
                       brand: dialogSelectedBrand!,
                       name: namesController.text,
@@ -333,15 +335,15 @@ class _InventoryCollectionFilmsScreenState extends State<InventoryCollectionFilm
                       sizeType: sizeTypeController.text,
                       iso: isoController.text.isEmpty ? null : isoController.text,
                       framesNumber: framesNumberController.text,
-                      expirationDate: selectedYear != null && selectedMonth != null
-                          ? DateTime(selectedYear!, selectedMonth!)
-                          : null,
+                      expirationDate: expirationDateController.text,
                       isExpired: isExpiredValue,
                       quantity: filmQuantity, // Use filmQuantity directly
                       averagePrice: parsedPrice,
                       comments: commentsController.text,
                     );
+                    print('3. Inserting film with expiration date: ${newFilms.expirationDate}');
                     await FilmsDatabaseHelper.insertFilms(newFilms);
+
                     _loadFilms();
                     Navigator.of(context).pop();
                   },
