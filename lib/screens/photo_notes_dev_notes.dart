@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:analog_photography_db/database_helpers/my_notes_database_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:analog_photography_db/database_helpers/my_notes_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/inventory_collection/films_database_helper.dart';
 
 
 class DevelopingNotesScreen extends StatefulWidget {
@@ -12,11 +13,20 @@ class DevelopingNotesScreen extends StatefulWidget {
 
 class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
   late Future<List<Map<String, dynamic>>> _notesFuture;
+  List<String> filmNames = [];
 
   @override
   void initState() {
     super.initState();
     _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
+    _loadFilmNames(); // Load film names when the screen is initialized
+    _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
+  }
+
+  Future<void> _loadFilmNames() async {
+    // Fetch film names from the database and update filmNames list
+    filmNames = await FilmsDatabaseHelper.getFilmNamesForDropdown();
+    setState(() {}); // Update the state to reflect the new data
   }
 
   Future<void> _showAddNoteDialog(BuildContext context) async {
@@ -37,6 +47,8 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     final devTimeController = TextEditingController();
     final temperatureController = TextEditingController();
     final commentsController = TextEditingController();
+
+    String? selectedFilmName;
 
     Future<void> _selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(
@@ -79,11 +91,22 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   ),
                   keyboardType: TextInputType.number, // Set the keyboard type to numeric
                 ),
-                TextField(
-                  controller: filmNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Film Name',
-                  ),
+                DropdownButtonFormField<String>(
+                  value: selectedFilmName,
+                  decoration: const InputDecoration(labelText: 'Select Film Name'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFilmName = newValue;
+                      // Auto-populate other fields based on the selected film name
+                      // Add your logic here to fetch and set data for other fields
+                    });
+                  },
+                  items: filmNames.map<DropdownMenuItem<String>>((String name) {
+                    return DropdownMenuItem<String>(
+                      value: name,
+                      child: Text(name),
+                    );
+                  }).toList(),
                 ),
                 TextField(
                   controller: filmTypeController,

@@ -42,4 +42,10 @@ class FilmsDatabaseHelper {
     );
   }
 
+  static Future<List<String>> getFilmNamesForDropdown() async {
+    final db = await _initDatabase();
+    final List<Map<String, dynamic>> maps = await db.query('films');
+    return maps.map((filmMap) => "${filmMap['brand']} ${filmMap['name']}").toList();
+  }
+
 }
