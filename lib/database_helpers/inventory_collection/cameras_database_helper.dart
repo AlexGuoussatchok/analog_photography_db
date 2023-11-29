@@ -29,4 +29,29 @@ class CamerasDatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('cameras');
     return maps.map((cameraMap) => InventoryCamera.fromMap(cameraMap)).toList();
   }
+
+  Future<List<Map<String, dynamic>>> getCamerasForDropdown() async {
+    final db = await _initDatabase();
+    final List<Map<String, dynamic>> cameraMaps = await db.query('cameras');
+
+    // Create a new list from the query results to make it mutable
+    List<Map<String, dynamic>> mutableCameraMaps = List<Map<String, dynamic>>.from(cameraMaps);
+
+    // Sort cameras alphabetically by brand and model
+    mutableCameraMaps.sort((a, b) => ('${a['brand']} ${a['model']}').compareTo('${b['brand']} ${b['model']}'));
+
+    return mutableCameraMaps.map((camera) {
+      // Combine brand, model, and serial number with "s/n" prefix
+      String displayValue = '${camera['brand']} ${camera['model']}';
+      if (camera['serial_number'] != null && camera['serial_number'].toString().isNotEmpty) {
+        displayValue += ' (s/n ${camera['serial_number']})';
+      }
+
+      return {
+        'displayValue': displayValue,
+        // Remove the 'subtitle' field if it's no longer needed
+      };
+    }).toList();
+  }
+
 }

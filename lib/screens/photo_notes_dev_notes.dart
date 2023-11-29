@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:analog_photography_db/database_helpers/my_notes_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/films_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/inventory_collection/cameras_database_helper.dart';
 
 
 class DevelopingNotesScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class DevelopingNotesScreen extends StatefulWidget {
 class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
   late Future<List<Map<String, dynamic>>> _notesFuture;
   List<String> filmNames = [];
+  List<Map<String, dynamic>> cameraDropdownItems = [];
+  String? selectedCamera;
 
   @override
   void initState() {
@@ -21,12 +24,18 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
     _loadFilmNames(); // Load film names when the screen is initialized
     _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
+    _loadCameras();
   }
 
   Future<void> _loadFilmNames() async {
     // Fetch film names from the database and update filmNames list
     filmNames = await FilmsDatabaseHelper.getFilmNamesForDropdown();
     setState(() {}); // Update the state to reflect the new data
+  }
+
+  Future<void> _loadCameras() async {
+    cameraDropdownItems = await CamerasDatabaseHelper().getCamerasForDropdown();
+    setState(() {}); // Refresh the UI with the loaded data
   }
 
   Future<void> _showAddNoteDialog(BuildContext context) async {
@@ -142,6 +151,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   decoration: const InputDecoration(
                     labelText: 'ISO',
                   ),
+                  keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: filmExpiredController,
@@ -154,12 +164,23 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Film Expiration Date',
                   ),
+                  keyboardType: TextInputType.number,
                 ),
-                TextField(
-                  controller: cameraController,
-                  decoration: const InputDecoration(
-                    labelText: 'Camera',
-                  ),
+                DropdownButtonFormField<String>(
+                  value: selectedCamera,
+                  decoration: const InputDecoration(labelText: 'Select Camera'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCamera = newValue;
+                      // Handle other field updates based on the selected camera
+                    });
+                  },
+                  items: cameraDropdownItems.map<DropdownMenuItem<String>>((Map<String, dynamic> item) {
+                    return DropdownMenuItem<String>(
+                      value: item['displayValue'],
+                      child: Text(item['displayValue']),
+                    );
+                  }).toList(),
                 ),
                 TextField(
                   controller: lensesController,
