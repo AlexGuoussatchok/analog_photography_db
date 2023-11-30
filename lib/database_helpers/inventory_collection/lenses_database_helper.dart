@@ -29,4 +29,28 @@ class LensesDatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('lenses');
     return maps.map((lensesMap) => InventoryLenses.fromMap(lensesMap)).toList();
   }
+
+  Future<List<Map<String, dynamic>>> getLensesForDropdown() async {
+    final db = await _initDatabase();
+    final List<Map<String, dynamic>> lensMaps = await db.query('lenses');
+
+    // Create a new list from the query results to make it mutable
+    List<Map<String, dynamic>> mutableLensMaps = List<Map<String, dynamic>>.from(lensMaps);
+
+    // Sort lenses alphabetically by brand and model
+    mutableLensMaps.sort((a, b) => ('${a['brand']} ${a['model']}').compareTo('${b['brand']} ${b['model']}'));
+
+    return mutableLensMaps.map((lens) {
+      // Combine brand, model, and serial number with "s/n" prefix
+      String displayValue = '${lens['brand']} ${lens['model']}';
+      if (lens['serial_number'] != null && lens['serial_number'].toString().isNotEmpty) {
+        displayValue += ' (s/n ${lens['serial_number']})';
+      }
+
+      return {
+        'displayValue': displayValue,
+        // Other fields can be added here if necessary
+      };
+    }).toList();
+  }
 }

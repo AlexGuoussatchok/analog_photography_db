@@ -3,7 +3,57 @@ import 'package:intl/intl.dart';
 import 'package:analog_photography_db/database_helpers/my_notes_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/films_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/cameras_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/inventory_collection/lenses_database_helper.dart';
 
+class CustomDropdown extends StatelessWidget {
+  final List<String> items;
+  final String? value;
+  final Function(String?) onChanged;
+
+  const CustomDropdown({
+    Key? key,
+    required this.items,
+    required this.value,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      onChanged: onChanged,
+      decoration: const InputDecoration(labelText: 'Lenses'),
+      selectedItemBuilder: (BuildContext context) {
+        // This builder controls how the selected item is displayed in the dropdown button
+        return items.map<Widget>((String item) {
+          return Text(
+            _truncateWithEllipsis(_replaceUnderscores(item), 30), // Truncate long texts
+            overflow: TextOverflow.ellipsis,
+          );
+        }).toList();
+      },
+      items: items.map((String item) {
+        // This builder controls how items are displayed in the dropdown menu
+        return DropdownMenuItem<String>(
+          value: item,
+          child: Text(
+            _replaceUnderscores(item),
+            softWrap: true,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  String _truncateWithEllipsis(String text, int maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  }
+
+  String _replaceUnderscores(String text) {
+    return text.replaceAll('_', ' ');
+  }
+}
 
 class DevelopingNotesScreen extends StatefulWidget {
   const DevelopingNotesScreen({super.key});
@@ -17,25 +67,32 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
   List<String> filmNames = [];
   List<Map<String, dynamic>> cameraDropdownItems = [];
   String? selectedCamera;
+  List<Map<String, dynamic>> lensesDropdownItems = [];
+  String? selectedLenses;
 
   @override
   void initState() {
     super.initState();
     _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
-    _loadFilmNames(); // Load film names when the screen is initialized
-    _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
+    _loadFilmNames();
     _loadCameras();
+    _loadLenses();
   }
 
   Future<void> _loadFilmNames() async {
-    // Fetch film names from the database and update filmNames list
     filmNames = await FilmsDatabaseHelper.getFilmNamesForDropdown();
-    setState(() {}); // Update the state to reflect the new data
+    setState(() {});
   }
 
   Future<void> _loadCameras() async {
     cameraDropdownItems = await CamerasDatabaseHelper().getCamerasForDropdown();
-    setState(() {}); // Refresh the UI with the loaded data
+    setState(() {});
+  }
+
+  Future<void> _loadLenses() async {
+    lensesDropdownItems = await LensesDatabaseHelper().getLensesForDropdown();
+    lensesDropdownItems.sort((a, b) => a['displayValue'].compareTo(b['displayValue']));
+    setState(() {});
   }
 
   Future<void> _showAddNoteDialog(BuildContext context) async {
@@ -72,7 +129,6 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
         });
       }
     }
-
 
     showDialog(
       context: context,
@@ -146,6 +202,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                     labelText: 'Film Size',
                   ),
                 ),
+
                 TextField(
                   controller: filmISOController,
                   decoration: const InputDecoration(
@@ -153,12 +210,14 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   ),
                   keyboardType: TextInputType.number,
                 ),
+
                 TextField(
                   controller: filmExpiredController,
                   decoration: const InputDecoration(
                     labelText: 'Film Expired?',
                   ),
                 ),
+
                 TextField(
                   controller: filmExpDateController,
                   decoration: const InputDecoration(
@@ -166,6 +225,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   ),
                   keyboardType: TextInputType.number,
                 ),
+
                 DropdownButtonFormField<String>(
                   value: selectedCamera,
                   decoration: const InputDecoration(labelText: 'Select Camera'),
@@ -182,12 +242,17 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                     );
                   }).toList(),
                 ),
-                TextField(
-                  controller: lensesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Lenses',
-                  ),
+
+                CustomDropdown(
+                  items: lensesDropdownItems.map((e) => e['displayValue'] as String).toList(),
+                  value: selectedLenses,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedLenses = newValue;
+                    });
+                  },
                 ),
+
                 TextField(
                   controller: developerController,
                   decoration: const InputDecoration(
