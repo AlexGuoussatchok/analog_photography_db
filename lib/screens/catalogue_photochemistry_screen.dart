@@ -23,8 +23,8 @@ class _CatalogueChemicalsScreenState extends State<CatalogueChemicalsScreen> wit
 
   _loadChemicals() async {
     try {
-      developers = await ChemicalsDatabaseHelper().getChemicals('developers', 'developer');
-      fixers = await ChemicalsDatabaseHelper().getChemicals('fixers', 'fixer');
+      developers = await ChemicalsCatalogueDatabaseHelper().getChemicals('developers', 'developer');
+      fixers = await ChemicalsCatalogueDatabaseHelper().getChemicals('fixers', 'fixer');
       setState(() {});
     } catch (e) {
       print("Error loading chemicals: $e");

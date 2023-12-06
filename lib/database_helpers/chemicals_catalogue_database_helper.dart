@@ -4,9 +4,9 @@ import 'package:path/path.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-class ChemicalsDatabaseHelper {
+class ChemicalsCatalogueDatabaseHelper {
   static const _dbName = 'chemicals_catalogue.db';
-  static const _databaseVersion = 20231121; // Define the version here
+  static const _databaseVersion = 20231121;
   static Database? _database;
 
   static Future<Database> get database async {
@@ -60,4 +60,22 @@ class ChemicalsDatabaseHelper {
     final result = await db.query(table, columns: ['id', columnName]);
     return result;
   }
+
+  Future<List<String>> fetchChemicalsList() async {
+    final db = await database; // Use the database getter
+    List<String> chemicalsList = [];
+
+    // Fetch developers
+    final developerResults = await db.query('developers', columns: ['developer']);
+    chemicalsList.addAll(developerResults.map((e) => e['developer'] as String));
+
+    // Fetch fixers
+    final fixerResults = await db.query('fixers', columns: ['fixer']);
+    chemicalsList.addAll(fixerResults.map((e) => e['fixer'] as String));
+
+    // Sort and return unique list
+    chemicalsList.sort();
+    return chemicalsList.toSet().toList(); // Convert to Set and back to List to remove duplicates
+  }
 }
+
