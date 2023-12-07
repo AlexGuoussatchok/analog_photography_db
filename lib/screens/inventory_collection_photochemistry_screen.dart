@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/chemicals_database_helper.dart';
 import 'package:analog_photography_db/models/inventory_chemicals.dart';
 import 'package:analog_photography_db/database_helpers/chemicals_catalogue_database_helper.dart';
+import 'package:analog_photography_db/lists/chemicals_condition_list.dart';
 
 class InventoryCollectionPhotochemistryScreen extends StatefulWidget {
   const InventoryCollectionPhotochemistryScreen({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class InventoryCollectionPhotochemistryScreen extends StatefulWidget {
 class _InventoryCollectionPhotochemistryScreenState extends State<InventoryCollectionPhotochemistryScreen> {
   List<InventoryChemicals> _chemicals = [];
   bool _isLoading = true;
+  String? selectedCondition;
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
     Map<String, String>? selectedChemical;
     final typeController = TextEditingController();
     final pricePaidController = TextEditingController();
-    final conditionController = TextEditingController();
+    //final conditionController = TextEditingController();
     final averagePriceController = TextEditingController();
     final commentsController = TextEditingController();
 
@@ -81,15 +83,30 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
                   ),
                 ),
 
-                TextField(
-                  controller: conditionController,
+                DropdownButtonFormField<String>(
+                  value: selectedCondition,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedCondition = newValue;
+                    });
+                  },
+                  items: chemicalsConditions.map<DropdownMenuItem<String>>((String condition) {
+                    return DropdownMenuItem<String>(
+                      value: condition,
+                      child: Text(condition),
+                    );
+                  }).toList(),
                   decoration: const InputDecoration(labelText: 'Condition'),
                 ),
 
                 TextField(
                   controller: averagePriceController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Average Price'),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true), // Numeric keyboard with decimal
+                  decoration: InputDecoration(
+                    labelText: 'Average Price',
+                    suffixText: '€', // Euro sign at the end of the input field
+                    suffixStyle: TextStyle(color: Colors.grey[600]), // Optional: Style for the suffix text
+                  ),
                 ),
 
                 TextField(
@@ -111,7 +128,7 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
                   chemical: selectedChemical?['name'] ?? 'Unknown',
                   type: typeController.text, // Use typeController's text for the 'Type' field
                   pricePaid: double.tryParse(pricePaidController.text),
-                  condition: conditionController.text,
+                  condition: selectedCondition ?? 'Unknown',
                   averagePrice: double.tryParse(averagePriceController.text),
                   comments: commentsController.text,
                 );

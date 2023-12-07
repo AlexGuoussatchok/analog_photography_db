@@ -1,7 +1,7 @@
 const List<String> chemicalsConditions = [
   'Fresh',
   'Used',
-  'Unknown'
+  'Unknown',
   'Possibly Dead'
 
 ];
