@@ -197,8 +197,7 @@ final Map<String, List<TableDefinition>> databaseDefinitions = {
         tableName: 'photo_chemistry',
         tableColumns: '''
             id INTEGER PRIMARY KEY, 
-            brand TEXT, 
-            name TEXT, 
+            chemical TEXT, 
             type TEXT,
             price_paid REAL,
             condition TEXT,
@@ -344,8 +343,7 @@ final Map<String, List<TableDefinition>> databaseDefinitions = {
         tableName: 'Photo_chemistry',
         tableColumns: '''
             id INTEGER PRIMARY KEY, 
-            brand TEXT, 
-            name TEXT, 
+            chemical TEXT, 
             condition TEXT,
             comments TEXT
         '''
@@ -487,8 +485,7 @@ final Map<String, List<TableDefinition>> databaseDefinitions = {
         tableName: 'Photo_chemistry',
         tableColumns: '''
             id INTEGER PRIMARY KEY, 
-            brand TEXT, 
-            model TEXT, 
+            chemical TEXT, 
             quantity INTEGER,
             comments TEXT
         '''

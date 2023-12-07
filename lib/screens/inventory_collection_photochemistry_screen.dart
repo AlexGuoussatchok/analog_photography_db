@@ -33,7 +33,7 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
 
   void _showAddChemicalsDialog(BuildContext context) async {
     final chemicalsList = await ChemicalsCatalogueDatabaseHelper().fetchChemicalsList();
-    String? selectedChemical;
+    Map<String, String>? selectedChemical;
     final typeController = TextEditingController();
     final pricePaidController = TextEditingController();
     final conditionController = TextEditingController();
@@ -48,24 +48,30 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
           content: SingleChildScrollView(
             child: Column(
               children: [
-                DropdownButtonFormField<String>(
+                DropdownButtonFormField<Map<String, String>>(
                   value: selectedChemical,
-                  onChanged: (newValue) => selectedChemical = newValue,
-                  items: chemicalsList.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedChemical = newValue;
+                      typeController.text = newValue?['type'] ?? ''; // Update the typeController text
+                    });
+                  },
+                  items: chemicalsList.map<DropdownMenuItem<Map<String, String>>>((Map<String, String> chemical) {
+                    return DropdownMenuItem<Map<String, String>>(
+                      value: chemical,
+                      child: Text(chemical['name']!),
                     );
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Chemical'),
                 ),
                 TextField(
-                  controller: typeController,
+                  controller: typeController, // This TextField is now controlled by typeController
                   decoration: const InputDecoration(labelText: 'Type'),
+                  readOnly: true, // Making this field read-only
                 ),
                 TextField(
                   controller: pricePaidController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(labelText: 'Price Paid'),
                 ),
                 TextField(
@@ -74,7 +80,7 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
                 ),
                 TextField(
                   controller: averagePriceController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(labelText: 'Average Price'),
                 ),
                 TextField(
@@ -93,8 +99,8 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
               onPressed: () async {
                 // ... existing code for saving data ...
                 final newChemical = InventoryChemicals(
-                  chemical: selectedChemical ?? 'Unknown', // Provide a default value if selectedChemical is null
-                  type: typeController.text,
+                  chemical: selectedChemical?['name'] ?? 'Unknown',
+                  type: typeController.text, // Use typeController's text for the 'Type' field
                   pricePaid: double.tryParse(pricePaidController.text),
                   condition: conditionController.text,
                   averagePrice: double.tryParse(averagePriceController.text),
@@ -127,7 +133,7 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
         itemBuilder: (context, index) {
           var chemical = _chemicals[index];
           return ListTile(
-            title: Text('${chemical.chemical}'),
+            title: Text(chemical.chemical),
             subtitle: Text('Type: ${chemical.type}'),
             onTap: () {
               // Implement tap functionality, e.g., navigate to a detail/edit page

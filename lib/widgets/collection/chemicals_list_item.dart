@@ -10,7 +10,7 @@ class ChemicalsListItem extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("${chemicals.brand.replaceAll('_', ' ')} ${chemicals.name}"),
+        title: Text(chemicals.chemical.replaceAll('_', ' ')),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
           height: MediaQuery.of(context).size.height * 0.5, // 50% of screen height
@@ -53,13 +53,10 @@ class ChemicalsListItem extends StatelessWidget {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text("${chemicals.brand.replaceAll('_', ' ')} ${chemicals.name}"),
-
+      title: Text(chemicals.chemical.replaceAll('_', ' ')),
       onTap: () {
         _showChemicalsDetails(context, chemicals);
       },

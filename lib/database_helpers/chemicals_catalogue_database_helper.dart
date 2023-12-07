@@ -61,21 +61,21 @@ class ChemicalsCatalogueDatabaseHelper {
     return result;
   }
 
-  Future<List<String>> fetchChemicalsList() async {
-    final db = await database; // Use the database getter
-    List<String> chemicalsList = [];
+  Future<List<Map<String, String>>> fetchChemicalsList() async {
+    final db = await database; // Use the 'database' getter you have defined
+    List<Map<String, String>> chemicalsList = [];
 
     // Fetch developers
     final developerResults = await db.query('developers', columns: ['developer']);
-    chemicalsList.addAll(developerResults.map((e) => e['developer'] as String));
+    chemicalsList.addAll(developerResults.map((e) => {'name': e['developer'] as String, 'type': 'developer'}));
 
     // Fetch fixers
     final fixerResults = await db.query('fixers', columns: ['fixer']);
-    chemicalsList.addAll(fixerResults.map((e) => e['fixer'] as String));
+    chemicalsList.addAll(fixerResults.map((e) => {'name': e['fixer'] as String, 'type': 'fixer'}));
 
-    // Sort and return unique list
-    chemicalsList.sort();
-    return chemicalsList.toSet().toList(); // Convert to Set and back to List to remove duplicates
+    // Sort by name
+    chemicalsList.sort((a, b) => a['name']!.compareTo(b['name']!));
+    return chemicalsList;
   }
 }
 

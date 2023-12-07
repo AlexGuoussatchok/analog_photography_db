@@ -20,7 +20,7 @@ class InventoryChemicals {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'brand': chemical,
+      'chemical': chemical,
       'type': type,
       'price_paid': pricePaid,
       'condition': condition,
