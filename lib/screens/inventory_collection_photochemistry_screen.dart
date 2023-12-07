@@ -64,25 +64,34 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
                   }).toList(),
                   decoration: const InputDecoration(labelText: 'Chemical'),
                 ),
+
                 TextField(
                   controller: typeController, // This TextField is now controlled by typeController
                   decoration: const InputDecoration(labelText: 'Type'),
                   readOnly: true, // Making this field read-only
                 ),
+
                 TextField(
                   controller: pricePaidController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Price Paid'),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true), // Numeric keyboard with decimal
+                  decoration: InputDecoration(
+                    labelText: 'Price Paid',
+                    suffixText: '€', // Euro sign at the end of the input field
+                    suffixStyle: TextStyle(color: Colors.grey[600]), // Optional: Style for the suffix text
+                  ),
                 ),
+
                 TextField(
                   controller: conditionController,
                   decoration: const InputDecoration(labelText: 'Condition'),
                 ),
+
                 TextField(
                   controller: averagePriceController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(labelText: 'Average Price'),
                 ),
+
                 TextField(
                   controller: commentsController,
                   decoration: const InputDecoration(labelText: 'Comments'),
