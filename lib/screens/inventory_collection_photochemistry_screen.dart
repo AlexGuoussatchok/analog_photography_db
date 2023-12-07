@@ -33,6 +33,7 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
     }
   }
 
+
   void _showAddChemicalsDialog(BuildContext context) async {
     final chemicalsList = await ChemicalsCatalogueDatabaseHelper().fetchChemicalsList();
     Map<String, String>? selectedChemical;
@@ -146,6 +147,34 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
     );
   }
 
+  void _confirmDelete(BuildContext context, int id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Delete"),
+          content: const Text("Are you sure you want to delete this item?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Delete"),
+              onPressed: () async {
+                await ChemicalsDatabaseHelper.deleteChemical(id);
+                _loadChemicals(); // Refresh the list
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,6 +193,12 @@ class _InventoryCollectionPhotochemistryScreenState extends State<InventoryColle
             onTap: () {
               // Implement tap functionality, e.g., navigate to a detail/edit page
             },
+            trailing: chemical.id != null ? IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                _confirmDelete(context, chemical.id!); // Using the null assertion operator `!` since we checked for null
+              },
+            ) : null,
           );
         },
       ),

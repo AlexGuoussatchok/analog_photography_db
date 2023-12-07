@@ -62,9 +62,9 @@ class ChemicalsDatabaseHelper {
     );
   }
 
-  static Future<int> deleteChemical(int id) async {
+  static Future<void> deleteChemical(int id) async {
     final db = await _initDatabase();
-    return await db.delete(
+    await db.delete(
       'photo_chemistry',
       where: 'id = ?',
       whereArgs: [id],
