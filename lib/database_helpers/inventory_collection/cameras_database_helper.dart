@@ -54,4 +54,14 @@ class CamerasDatabaseHelper {
     }).toList();
   }
 
+  static Future<void> deleteCamera(int id) async {
+    final db = await _initDatabase();
+    await db.delete(
+      'cameras',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+
 }

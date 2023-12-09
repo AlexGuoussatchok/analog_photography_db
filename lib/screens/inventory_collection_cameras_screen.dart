@@ -4,6 +4,8 @@ import 'package:analog_photography_db/models/inventory_camera.dart';
 import 'package:analog_photography_db/widgets/collection/cameras_list_item.dart';
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
 import 'package:analog_photography_db/lists/cameras_condition_list.dart';
+import 'package:intl/intl.dart';
+
 
 
 class InventoryCollectionCamerasScreen extends StatefulWidget {
@@ -20,6 +22,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
   List<String> _dialogCameraModels = [];
   bool _isLoading = true;
   DateTime selectedDate = DateTime.now();
+  late TextEditingController purchaseDateController;
+  late TextEditingController filmLoadDateController;
 
 
   @override
@@ -39,26 +43,120 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     }
   }
 
-
-  Future<void> _updateCameraModels() async {
-    if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
-      final modelsData = await CamerasCatalogueDatabaseHelper().getCameraModelsByBrand(_dialogSelectedBrand!);
-
+  Future<void> selectDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2222),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
       setState(() {
-        _dialogCameraModels = modelsData.map((item) => item['model'] as String).toList();
-      });
-    } else {
-      setState(() {
-        _dialogCameraModels = [];
+        selectedDate = pickedDate;
+        purchaseDateController.text = DateFormat('yyyy-MM-dd').format(selectedDate); // Ensure correct format
       });
     }
   }
 
+  Future<void> selectFilmLoadedDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        filmLoadDateController.text = DateFormat('yyyy-MM-dd').format(pickedDate); // Ensure correct format
+      });
+    }
+  }
+
+  void _confirmDeleteCamera(int? cameraId, int index) {
+    if (cameraId == null) return;
+
+    showDialog(
+      context: context,
+      builder: (ctx) =>
+          AlertDialog(
+            title: const Text('Confirm Delete'),
+            content: const Text('Are you sure you want to delete this camera?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+              TextButton(
+                child: const Text('Delete'),
+                onPressed: () async {
+                  await CamerasDatabaseHelper.deleteCamera(cameraId);
+                  setState(() {
+                    _cameras.removeAt(index);
+                  });
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showCameraDetails(InventoryCamera camera) {
+    showDialog(
+      context: context,
+      builder: (ctx) =>
+          AlertDialog(
+            title: const Text('Camera Details'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Brand: ${camera.brand}'),
+                  Text('Model: ${camera.model}'),
+                  Text('Serial Number: ${camera.serialNumber ?? 'N/A'}'),
+                  Text('Purchase date: ${camera.purchaseDate != null ? DateFormat('yyyy-MM-dd').format(camera.purchaseDate!) : 'N/A'}'),
+                  Text('Price paid: ${camera.pricePaid}'),
+                  Text('Condition: ${camera.condition}'),
+                  Text('Average price (Euro): ${camera.averagePrice}'),
+                  Text('Comments: ${camera.comments}'),
+                  // Add other camera details here
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () => Navigator.of(ctx).pop(),
+              ),
+            ],
+          ),
+    );
+  }
+
+
+  // Future<void> _updateCameraModels() async {
+  //   if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
+  //     final modelsData = await CamerasCatalogueDatabaseHelper()
+  //         .getCameraModelsByBrand(_dialogSelectedBrand!);
+  //
+  //     setState(() {
+  //       _dialogCameraModels =
+  //           modelsData.map((item) => item['model'] as String).toList();
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _dialogCameraModels = [];
+  //     });
+  //   }
+  // }
 
 
   void _showAddCameraDialog(BuildContext context) async {
-    final List<Map<String, dynamic>> brandList = await CamerasCatalogueDatabaseHelper().getCameraBrands();
-    final List<String> brandNames = brandList.map((e) => e['brand'] as String).toList();
+    final List<
+        Map<String, dynamic>> brandList = await CamerasCatalogueDatabaseHelper()
+        .getCameraBrands();
+    final List<String> brandNames = brandList.map((e) => e['brand'] as String)
+        .toList();
 
     String? dialogSelectedBrand;
     List<String> dialogCameraModels = [];
@@ -76,11 +174,14 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     Future<void> updateCameraModels(StateSetter setState) async {
       if (dialogSelectedBrand != null && dialogSelectedBrand!.isNotEmpty) {
         final camerasCatalogueDbHelper = CamerasCatalogueDatabaseHelper();
-        final modelsData = await camerasCatalogueDbHelper.getCameraModelsByBrand(dialogSelectedBrand!.toLowerCase());
+        final modelsData = await camerasCatalogueDbHelper
+            .getCameraModelsByBrand(dialogSelectedBrand!.toLowerCase());
 
         setState(() {
-          dialogCameraModels = modelsData.map((item) => item['model'] as String).toList();
-          modelController.text = ''; // or set it to null or an initial value if required
+          dialogCameraModels =
+              modelsData.map((item) => item['model'] as String).toList();
+          modelController.text =
+          ''; // or set it to null or an initial value if required
         });
       } else {
         setState(() {
@@ -96,11 +197,13 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
         firstDate: DateTime(1900),
         lastDate: DateTime(2222),
       );
-      if (pickedDate != null && pickedDate != selectedDate)
+      if (pickedDate != null && pickedDate != selectedDate) {
         setState(() {
           selectedDate = pickedDate;
-          purchaseDateController.text = "${selectedDate.toLocal()}".split(' ')[0]; // formats it to yyyy-mm-dd
+          purchaseDateController.text =
+          "${selectedDate.toLocal()}".split(' ')[0]; // formats it to yyyy-mm-dd
         });
+      }
     }
 
     Future<void> selectFilmLoadedDate(BuildContext context) async {
@@ -117,8 +220,6 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
         });
       }
     }
-
-
 
     showDialog(
       context: context,
@@ -141,14 +242,18 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
                       onChanged: (newValue) {
                         dialogSetState(() {
                           dialogSelectedBrand = newValue;
-                          modelController.text = '';  // Clear the model when brand changes.
+                          modelController.text =
+                          ''; // Clear the model when brand changes.
                         });
-                        updateCameraModels(dialogSetState);  // Passing the StateSetter to updateCameraModels function
+                        updateCameraModels(
+                            dialogSetState); // Passing the StateSetter to updateCameraModels function
                       },
                       decoration: const InputDecoration(labelText: 'Brand'),
                     ),
                     DropdownButtonFormField<String>(
-                      value: modelController.text.isNotEmpty ? modelController.text : null,  // Use the value of modelController for the dropdown value.
+                      value: modelController.text.isNotEmpty ? modelController
+                          .text : null,
+                      // Use the value of modelController for the dropdown value.
                       items: dialogCameraModels.map((String model) {
                         return DropdownMenuItem<String>(
                           value: model,
@@ -166,13 +271,16 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
                     TextField(
                       controller: serialNumberController,
                       keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(labelText: 'Serial Number'),
+                      decoration: const InputDecoration(
+                          labelText: 'Serial Number'),
                     ),
 
                     TextField(
                       controller: purchaseDateController,
-                      readOnly: true,  // Makes the text field read-only, so it's not editable
-                      decoration: const InputDecoration(labelText: 'Purchase Date'),
+                      readOnly: true,
+                      // Makes the text field read-only, so it's not editable
+                      decoration: const InputDecoration(
+                          labelText: 'Purchase Date'),
                       onTap: () {
                         selectDate(context);
                       },
@@ -180,16 +288,19 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
 
                     TextField(
                       controller: pricePaidController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),  // Ensures numeric keyboard layout
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true), // Ensures numeric keyboard layout
                       decoration: const InputDecoration(
                         labelText: 'Price Paid',
-                        suffixText: '€',  // Display Euro sign at the end
+                        suffixText: '€', // Display Euro sign at the end
                       ),
                     ),
 
 
                     DropdownButtonFormField<String>(
-                      value: conditionController.text.isEmpty ? null : conditionController.text,
+                      value: conditionController.text.isEmpty
+                          ? null
+                          : conditionController.text,
                       items: cameraConditions.map((String condition) {
                         return DropdownMenuItem<String>(
                           value: condition,
@@ -207,7 +318,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
                     TextField(
                       controller: filmLoadDateController,
                       readOnly: true,
-                      decoration: const InputDecoration(labelText: 'Film Load Date'),
+                      decoration: const InputDecoration(
+                          labelText: 'Film Load Date'),
                       onTap: () {
                         selectFilmLoadedDate(context);
                       },
@@ -215,15 +327,17 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
 
                     TextField(
                       controller: filmLoadedController,
-                      decoration: const InputDecoration(labelText: 'Film Loaded'),
+                      decoration: const InputDecoration(
+                          labelText: 'Film Loaded'),
                     ),
 
                     TextField(
                       controller: averagePriceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),  // Ensures numeric keyboard layout
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true), // Ensures numeric keyboard layout
                       decoration: const InputDecoration(
                         labelText: 'Average Price',
-                        suffixText: '€',  // Display Euro sign at the end
+                        suffixText: '€', // Display Euro sign at the end
                       ),
                     ),
 
@@ -246,7 +360,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
             TextButton(
               onPressed: () async {
                 double? pricePaid = double.tryParse(pricePaidController.text);
-                double? averagePrice = double.tryParse(averagePriceController.text);
+                double? averagePrice = double.tryParse(
+                    averagePriceController.text);
 
                 final newCamera = InventoryCamera(
                   brand: dialogSelectedBrand!,
@@ -286,7 +401,16 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
           : ListView.builder(
         itemCount: _cameras.length,
         itemBuilder: (context, index) {
-          return CameraListItem(camera: _cameras[index]);
+          return ListTile(
+            title: Text("${_cameras[index].brand} ${_cameras[index].model}"),
+            subtitle: Text(
+                "Serial Number: ${_cameras[index].serialNumber ?? 'N/A'}"),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _confirmDeleteCamera(_cameras[index].id, index),
+            ),
+            onTap: () => _showCameraDetails(_cameras[index]),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

@@ -58,6 +58,7 @@ flutter:
     - assets/images/developers/
 
 
+
     - assets/images/dryers/ilford/
 
 
@@ -66,6 +67,8 @@ flutter:
     - assets/images/films/ilford/
     - assets/images/films/orwo/
     - assets/images/films/tasma/
+
+    - assets/images/fixers/
 
 
 
