@@ -4,6 +4,7 @@ import 'package:analog_photography_db/models/inventory_lenses.dart';
 import 'package:analog_photography_db/widgets/collection/lenses_list_item.dart';
 import 'package:analog_photography_db/database_helpers/lenses_catalogue_database_helper.dart';
 import 'package:analog_photography_db/lists/lenses_condition_list.dart';
+import 'package:intl/intl.dart';
 
 
 class InventoryCollectionLensesScreen extends StatefulWidget {
@@ -54,7 +55,65 @@ class _InventoryCollectionLensesScreenState extends State<InventoryCollectionLen
     }
   }
 
+  void _showLensDetailsDialog(BuildContext context, InventoryLenses lens) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Lens Details'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Brand: ${lens.brand}'),
+                Text('Model: ${lens.model}'),
+                Text('Serial Number: ${lens.serialNumber ?? "N/A"}'),
+                Text('Purchase Date: ${lens.purchaseDate != null ? DateFormat('yyyy-MM-dd').format(lens.purchaseDate!) : "N/A"}'),
+                Text('Price Paid: ${lens.pricePaid != null ? "${lens.pricePaid} €" : "N/A"}'),
+                Text('Condition: ${lens.condition}'),
+                Text('Average Price: ${lens.averagePrice != null ? "${lens.averagePrice} €" : "N/A"}'),
+                Text('Comments: ${lens.comments ?? "N/A"}'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+
+  Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion"),
+          content: const Text("Are you sure you want to delete this lens?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text("Delete"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    ) ?? false;  // Returning false if the dialog is dismissed
+  }
 
   void _showAddLensesDialog(BuildContext context) async {
     final List<Map<String, dynamic>> brandList = await LensesCatalogueDatabaseHelper().getLensesBrands();
@@ -94,11 +153,12 @@ class _InventoryCollectionLensesScreenState extends State<InventoryCollectionLen
         firstDate: DateTime(1900),
         lastDate: DateTime(2222),
       );
-      if (pickedDate != null && pickedDate != selectedDate)
+      if (pickedDate != null && pickedDate != selectedDate) {
         setState(() {
           selectedDate = pickedDate;
           purchaseDateController.text = "${selectedDate.toLocal()}".split(' ')[0]; // formats it to yyyy-mm-dd
         });
+      }
     }
 
     showDialog(
@@ -251,7 +311,27 @@ class _InventoryCollectionLensesScreenState extends State<InventoryCollectionLen
           : ListView.builder(
         itemCount: _lenses.length,
         itemBuilder: (context, index) {
-          return LensesListItem(lenses: _lenses[index]);
+          final lens = _lenses[index];
+          return ListTile(
+            title: Text('${lens.brand} ${lens.model}'), // Customize with your lens details
+            subtitle: Text('Serial: ${lens.serialNumber ?? "N/A"}'), // Optional
+            trailing: IconButton(
+              icon: const Icon(Icons.delete, color: Colors.grey),
+              onPressed: () async {
+                bool confirmDelete = await _showDeleteConfirmationDialog(context);
+                if (confirmDelete) {
+                  await LensesDatabaseHelper.deleteLens(lens.id!);
+                  setState(() {
+                    _lenses.removeAt(index);
+                  });
+                }
+              },
+            ),
+            onTap: () {
+              // Code to show lens details - Add your existing detail view logic here
+              _showLensDetailsDialog(context, lens);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

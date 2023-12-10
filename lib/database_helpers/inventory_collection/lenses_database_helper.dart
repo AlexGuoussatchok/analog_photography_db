@@ -53,4 +53,10 @@ class LensesDatabaseHelper {
       };
     }).toList();
   }
+
+  static Future<void> deleteLens(int id) async {
+    final db = await _initDatabase();
+    await db.delete('lenses', where: 'id = ?', whereArgs: [id]);
+  }
 }
+
