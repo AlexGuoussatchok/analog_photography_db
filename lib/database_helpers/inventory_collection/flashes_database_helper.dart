@@ -28,4 +28,14 @@ class FlashesDatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.query('flashes');
     return maps.map((flashesMap) => InventoryFlashes.fromMap(flashesMap)).toList();
   }
+
+  static Future<void> deleteFlash(int id) async {
+    final db = await _initDatabase();
+    await db.delete(
+      'flashes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
 }

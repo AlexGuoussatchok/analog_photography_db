@@ -54,6 +54,38 @@ class _InventoryCollectionFlashesScreenState extends State<InventoryCollectionFl
     }
   }
 
+  Future<void> _deleteFlash(int id) async {
+    await FlashesDatabaseHelper.deleteFlash(id);
+    _loadFlashes();  // Reload the list to reflect the change
+  }
+
+  Future<void> _confirmDelete(int id) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Flash"),
+          content: Text("Are you sure you want to delete this flash?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Delete"),
+              onPressed: () {
+                _deleteFlash(id);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showAddFlashesDialog(BuildContext context) async {
     final List<Map<String, dynamic>> brandList = await FlashesCatalogueDatabaseHelper().getFlashesBrands();
     final List<String> brandNames = brandList.map((e) => e['brands'] as String).toList();
@@ -249,7 +281,14 @@ class _InventoryCollectionFlashesScreenState extends State<InventoryCollectionFl
           : ListView.builder(
         itemCount: _flashes.length,
         itemBuilder: (context, index) {
-          return FlashesListItem(flashes: _flashes[index]);
+          final flash = _flashes[index];
+          return ListTile(
+            title: FlashesListItem(flashes: flash),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _confirmDelete(flash.id!),
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
