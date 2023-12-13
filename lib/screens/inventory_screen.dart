@@ -10,6 +10,7 @@ import 'package:analog_photography_db/screens/inventory_collection_processors_sc
 import 'package:analog_photography_db/screens/inventory_collection_dryers_screen.dart';
 import 'package:analog_photography_db/screens/inventory_collection_films_screen.dart';
 import 'package:analog_photography_db/screens/inventory_collection_photochemistry_screen.dart';
+import 'package:analog_photography_db/extra_function/inventory_backup/backup.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({Key? key}) : super(key: key);
@@ -49,7 +50,6 @@ class _InventoryScreenState extends State<InventoryScreen>
     await InventoryDatabaseHelper.initDatabase('inventory_borrowed_stuff.db');
   }
 
-
   @override
   void dispose() {
     _firstTabController.dispose();
@@ -65,6 +65,22 @@ class _InventoryScreenState extends State<InventoryScreen>
     super.dispose();
   }
 
+  void _handleMenuSelection(String value) {
+    if (value == 'Backup') {
+      _showBackupDialog();
+    }
+    // Handle other menu options as needed
+  }
+
+  void _showBackupDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const BackupDialog(); // Make sure this is imported correctly
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -74,6 +90,19 @@ class _InventoryScreenState extends State<InventoryScreen>
           return Scaffold(
             appBar: AppBar(
               title: const Text('My Inventory'),
+              actions: [
+                PopupMenuButton<String>(
+                  onSelected: _handleMenuSelection,
+                  itemBuilder: (BuildContext context) {
+                    return {'Backup'}.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                ),
+              ],
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(120.0),
                 child: Column(
