@@ -67,9 +67,11 @@ class _InventoryScreenState extends State<InventoryScreen>
 
   void _handleMenuSelection(String value) {
     if (value == 'Backup') {
-      _showBackupDialog();
+      // Backup logic
+    } else if (value == 'Import DB') {
+      BackupUtils.importDatabase(context);
     }
-    // Handle other menu options as needed
+    // Other options...
   }
 
   void _showBackupDialog() {
@@ -80,6 +82,8 @@ class _InventoryScreenState extends State<InventoryScreen>
       },
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +98,7 @@ class _InventoryScreenState extends State<InventoryScreen>
                 PopupMenuButton<String>(
                   onSelected: _handleMenuSelection,
                   itemBuilder: (BuildContext context) {
-                    return {'Backup'}.map((String choice) {
+                    return {'Backup', 'Import DB'}.map((String choice) {
                       return PopupMenuItem<String>(
                         value: choice,
                         child: Text(choice),

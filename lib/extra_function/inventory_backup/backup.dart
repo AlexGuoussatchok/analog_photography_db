@@ -81,6 +81,20 @@ class _BackupDialogState extends State<BackupDialog> {
     }
   }
 
+  Future<void> importDatabase(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['db'],
+    );
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      // Process the file, rename if necessary, and move/replace it in the app's database directory
+    } else {
+      // User canceled the picker
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,4 +133,40 @@ class _BackupDialogState extends State<BackupDialog> {
       ],
     );
   }
+}
+
+class BackupUtils {
+  static Future<void> importDatabase(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      String filePath = result.files.single.path!;
+      File file = File(filePath);
+
+      // Check if the selected file is a .db file
+      if (filePath.endsWith('.db')) {
+        String dbName = file.path.split('/').last;
+        String dbPath = await getDatabasesPath() + '/' + dbName;
+
+        // Replace the existing database
+        await file.copy(dbPath);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Database imported successfully')),
+        );
+      } else {
+        // If the file is not a .db file, inform the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a valid .db file')),
+        );
+      }
+    } else {
+      // User canceled the picker
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Database import cancelled')),
+      );
+    }
+  }
+
+
 }
