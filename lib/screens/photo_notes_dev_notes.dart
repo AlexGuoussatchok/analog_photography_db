@@ -353,10 +353,15 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 var note = snapshot.data![index];
-                // Customize how you display each note here
                 return ListTile(
-                  title: Text(note['film_name'] ?? 'Unknown'),
-                  // Add more details as needed
+                  title: Text('${note['date']} - ${note['film_number']}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('Film: ${note['film_name']} - ISO: ${note['ISO']}'),
+                      Text('Developer: ${note['developer']} - Dev Time: ${note['dev_time']}'),
+                    ],
+                  ),
                 );
               },
             );

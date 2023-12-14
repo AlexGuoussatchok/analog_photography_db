@@ -57,7 +57,10 @@ class MyNotesDatabaseHelper {
     if (db == null) {
       throw Exception("Database not initialized");
     }
-    final List<Map<String, dynamic>> notes = await db.query('my_film_dev_notes');
+    final List<Map<String, dynamic>> notes = await db.query(
+        'my_film_dev_notes',
+        orderBy: 'date DESC' // Sort by date in descending order
+    );
     return notes;
   }
 
