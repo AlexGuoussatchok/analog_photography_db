@@ -22,7 +22,13 @@ class MyNotesDatabaseHelper {
   }
 
   static Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
+    var tableExists = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='my_film_dev_notes'"
+    );
+
+    // If the query returns no rows, the table does not exist and should be created.
+    if (tableExists.isEmpty) {
+      await db.execute('''
       CREATE TABLE my_film_dev_notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT,
@@ -43,13 +49,21 @@ class MyNotesDatabaseHelper {
         comments TEXT
       );
     ''');
+    }
 
-    await db.execute('''
+    // Repeat the same process for other tables
+    tableExists = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='my_films_history_notes'"
+    );
+
+    if (tableExists.isEmpty) {
+      await db.execute('''
       CREATE TABLE my_films_history_notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         film_number TEXT
       );
     ''');
+    }
   }
 
   Future<List<Map<String, dynamic>>> getDevelopingNotes() async {
