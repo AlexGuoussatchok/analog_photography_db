@@ -362,6 +362,9 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                       Text('Developer: ${note['developer']} - Dev Time: ${note['dev_time']}'),
                     ],
                   ),
+                  onTap: () {
+                    MyNotesDatabaseHelper.showNoteDetails(context, note);
+                  },
                 );
               },
             );
