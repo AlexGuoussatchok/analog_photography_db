@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
+import 'package:flutter/services.dart';
 
 class CatalogueCamerasScreen extends StatefulWidget {
-  const CatalogueCamerasScreen({Key? key}) : super(key: key);
+  const CatalogueCamerasScreen({super.key});
 
   @override
   _CatalogueCamerasScreenState createState() => _CatalogueCamerasScreenState();
@@ -17,6 +18,15 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
   void initState() {
     super.initState();
     _loadCameraBrands();
+  }
+
+  Future<String> _readCameraDescription(String path) async {
+    try {
+      return await rootBundle.loadString(path);
+    } catch (e) {
+      print("Error reading text file: $e");
+      return "Description not available.";
+    }
   }
 
   _loadCameraBrands() async {
@@ -49,6 +59,7 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
     String brand = selectedBrand!.toLowerCase();
     String imageId = details['id'].toString();
     String imagePath = 'assets/images/cameras/$brand/$imageId.jpg';
+    String textPath = 'assets/texts/cameras/$brand/$imageId.txt';
 
     List<Widget> detailWidgets = details.entries.where((entry) =>
     // Exclude entries that are null or in the excludedColumns list
@@ -82,37 +93,39 @@ class _CatalogueCamerasScreenState extends State<CatalogueCamerasScreen> {
 
     // Combined list of widgets with image and details
     List<Widget> combinedWidgets = [
-      Image.asset(imagePath), // Display the camera image
+      Image.asset(imagePath),
       Text(details['model']?.replaceAll('_', ' ') ?? "Unknown Model"),
-      const SizedBox(height: 10.0), // Optional: To add some spacing
+      const SizedBox(height: 10.0),
       ...detailWidgets
     ];
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: combinedWidgets,
+    _readCameraDescription(textPath).then((cameraDescription) {
+      // Add the description text to combinedWidgets
+      combinedWidgets.add(Text(cameraDescription));
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: combinedWidgets,
+              ),
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
