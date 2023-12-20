@@ -5,6 +5,11 @@ import 'package:analog_photography_db/widgets/collection/cameras_list_item.dart'
 import 'package:analog_photography_db/database_helpers/cameras_catalogue_database_helper.dart';
 import 'package:analog_photography_db/lists/cameras_condition_list.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf/pdf.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+
 
 
 
@@ -138,6 +143,78 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
       _cameras.sort((a, b) => a.brand.compareTo(b.brand));
     });
   }
+
+  void _saveAsPdf() async {
+    final pdf = pw.Document();
+    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+
+    final landscapeFormat = PdfPageFormat.a4.landscape;
+
+    pdf.addPage(
+        pw.MultiPage(
+          pageFormat: landscapeFormat, // Apply the landscape format here
+          build: (pw.Context context) => [
+          pw.Table.fromTextArray(
+          context: context,
+          headerDecoration: pw.BoxDecoration(
+            color: PdfColors.grey300,
+          ),
+          headerHeight: 25,
+          cellHeight: 40,
+          cellAlignments: {
+            0: pw.Alignment.center,
+            1: pw.Alignment.center,
+            2: pw.Alignment.center,
+            3: pw.Alignment.center,
+            4: pw.Alignment.center,
+            5: pw.Alignment.center,
+            6: pw.Alignment.center,
+            7: pw.Alignment.center,
+          },
+          headerStyle: pw.TextStyle(
+            color: PdfColors.white,
+            fontWeight: pw.FontWeight.bold,
+          ),
+          cellStyle: const pw.TextStyle(
+            color: PdfColors.black,
+          ),
+          data: <List<String>>[
+            <String>[
+              'Brand',
+              'Model',
+              'Serial Number',
+              'Purchase Date',
+              'Price Paid',
+              'Condition',
+              'Average Price',
+              'Comments'
+            ],
+            ..._cameras.map((camera) => [
+              camera.brand,
+              camera.model,
+              camera.serialNumber ?? 'N/A',
+              camera.purchaseDate != null ? dateFormat.format(camera.purchaseDate!) : 'N/A',
+              camera.pricePaid != null ? camera.pricePaid.toString() : 'N/A',
+              camera.condition ?? 'N/A',
+              camera.averagePrice != null ? camera.averagePrice.toString() : 'N/A',
+              camera.comments ?? 'N/A',
+            ]).toList(),
+          ],
+          ),
+            // ... other content for the page ...
+          ],
+        ),
+    );
+
+    // Saving and printing the PDF file path...
+    final directory = await getApplicationDocumentsDirectory();
+    final String path = '${directory.path}/camera_collection.pdf';
+    final file = File(path);
+    await file.writeAsBytes(await pdf.save());
+    print('Saved PDF at: $path');
+  }
+
+
 
 
   // Future<void> _updateCameraModels() async {
@@ -400,16 +477,22 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("Cameras Collection"),
+        title: const Text("Camera Collection"),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (String choice) {
-              if (choice == 'Sort by Brand') {
-                _sortCamerasByBrand();
+              switch (choice) {
+                case 'Save as PDF':
+                  _saveAsPdf();
+                  break;
+                case 'Sort by Brand':
+                  _sortCamerasByBrand();
+                  break;
+                default:
               }
             },
             itemBuilder: (BuildContext context) {
-              return {'Sort by Brand'}.map((String choice) {
+              return {'Save as PDF', 'Sort by Brand'}.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
