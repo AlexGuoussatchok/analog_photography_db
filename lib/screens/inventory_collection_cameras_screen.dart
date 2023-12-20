@@ -147,12 +147,25 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
   void _saveAsPdf() async {
     final pdf = pw.Document();
     final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+    final DateFormat titleDateFormat = DateFormat('yyyy-MM-dd HH:mm');
+    final String titleDate = titleDateFormat.format(DateTime.now());
 
     final landscapeFormat = PdfPageFormat.a4.landscape;
 
     pdf.addPage(
         pw.MultiPage(
-          pageFormat: landscapeFormat, // Apply the landscape format here
+          pageFormat: landscapeFormat,
+          header: (pw.Context context) {
+            if (context.pageNumber == 1) {
+              return pw.Column(
+                  children: [
+                    pw.Text('Cameras Collection - $titleDate', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 10), // Add some spacing after the title
+                  ]
+              );
+            }
+            return pw.Container();
+          },
           build: (pw.Context context) => [
           pw.Table.fromTextArray(
           context: context,
