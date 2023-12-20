@@ -7,7 +7,7 @@ class InventoryCamera {
   String? serialNumber;
   DateTime? purchaseDate;
   double? pricePaid;
-  String condition;
+  String? condition;
   DateTime? filmLoadDate;
   String? filmLoaded;
   double? averagePrice;
@@ -20,7 +20,7 @@ class InventoryCamera {
     this.serialNumber,
     this.purchaseDate,
     this.pricePaid,
-    required this.condition,
+    this.condition,
     this.filmLoadDate,
     this.filmLoaded,
     this.averagePrice,

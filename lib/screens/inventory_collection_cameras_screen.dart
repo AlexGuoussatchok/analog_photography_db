@@ -133,6 +133,12 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     );
   }
 
+  void _sortCamerasByBrand() {
+    setState(() {
+      _cameras.sort((a, b) => a.brand.compareTo(b.brand));
+    });
+  }
+
 
   // Future<void> _updateCameraModels() async {
   //   if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
@@ -394,7 +400,24 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("Camera Collection"),
+        title: const Text("Cameras Collection"),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (String choice) {
+              if (choice == 'Sort by Brand') {
+                _sortCamerasByBrand();
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return {'Sort by Brand'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
