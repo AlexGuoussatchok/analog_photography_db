@@ -242,8 +242,16 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Delete'),
+              leading: Icon(Icons.edit),
+              title: Text('Edit'),
+              onTap: () {
+                Navigator.of(context).pop(); // Close the options menu
+                _showEditCameraDialog(context, index);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete'),
               onTap: () {
                 Navigator.of(context).pop(); // Close the options menu
                 _confirmDeleteCamera(_cameras[index].id, index);
@@ -255,6 +263,167 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
       },
     );
   }
+
+  void _showEditCameraDialog(BuildContext context, int index) {
+    // Retrieve the camera data for editing
+    InventoryCamera cameraToEdit = _cameras[index];
+
+    // Create text controllers for editing fields
+    TextEditingController serialNumberController = TextEditingController(text: cameraToEdit.serialNumber);
+    TextEditingController purchaseDateController = TextEditingController(text: cameraToEdit.purchaseDate != null ? cameraToEdit.purchaseDate.toString() : "");
+    TextEditingController pricePaidController = TextEditingController(text: cameraToEdit.pricePaid != null ? cameraToEdit.pricePaid.toString() : "");
+    TextEditingController conditionController = TextEditingController(text: cameraToEdit.condition);
+    TextEditingController filmLoadDateController = TextEditingController(text: cameraToEdit.filmLoadDate != null ? cameraToEdit.filmLoadDate.toString() : "");
+    TextEditingController filmLoadedController = TextEditingController(text: cameraToEdit.filmLoaded);
+    TextEditingController averagePriceController = TextEditingController(text: cameraToEdit.averagePrice != null ? cameraToEdit.averagePrice.toString() : "");
+    TextEditingController commentsController = TextEditingController(text: cameraToEdit.comments);
+
+    Future<void> selectDate(BuildContext context) async {
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2222),
+      );
+      if (pickedDate != null && pickedDate != selectedDate) {
+        setState(() {
+          selectedDate = pickedDate;
+          purchaseDateController.text =
+          "${selectedDate.toLocal()}".split(' ')[0]; // formats it to yyyy-mm-dd
+        });
+      }
+    }
+
+    Future<void> selectFilmLoadedDate(BuildContext context) async {
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime.now(),
+      );
+
+      if (pickedDate != null) {
+        setState(() {
+          filmLoadDateController.text = '${pickedDate.toLocal()}'.split(' ')[0];
+        });
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Camera'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Add input fields for editing camera properties
+
+                TextField(
+                  controller: serialNumberController,
+                  decoration: InputDecoration(labelText: 'Serial Number'),
+                ),
+
+                TextField(
+                  controller: purchaseDateController,
+                  readOnly: true,
+                  // Makes the text field read-only, so it's not editable
+                  decoration: const InputDecoration(
+                      labelText: 'Purchase Date'),
+                  onTap: () {
+                    selectDate(context);
+                  },
+                ),
+
+                TextField(
+                  controller: pricePaidController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true), // Ensures numeric keyboard layout
+                  decoration: const InputDecoration(
+                    labelText: 'Price Paid',
+                    suffixText: '€', // Display Euro sign at the end
+                  ),
+                ),
+
+                DropdownButtonFormField<String>(
+                  value: conditionController.text.isEmpty
+                      ? null
+                      : conditionController.text,
+                  items: cameraConditions.map((String condition) {
+                    return DropdownMenuItem<String>(
+                      value: condition,
+                      child: Text(condition),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      conditionController.text = newValue!;
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Condition'),
+                ),
+
+                TextField(
+                  controller: filmLoadDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                      labelText: 'Film Load Date'),
+                  onTap: () {
+                    selectFilmLoadedDate(context);
+                  },
+                ),
+
+                TextField(
+                  controller: filmLoadedController,
+                  decoration: InputDecoration(labelText: 'Film Loaded'),
+                ),
+
+
+                TextField(
+                  controller: averagePriceController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true), // Ensures numeric keyboard layout
+                  decoration: const InputDecoration(
+                    labelText: 'Average Price',
+                    suffixText: '€', // Display Euro sign at the end
+                  ),
+                ),
+
+                TextField(
+                  controller: commentsController,
+                  decoration: InputDecoration(labelText: 'Comments'),
+                ),
+
+                // Add a "Save" button to save changes
+                ElevatedButton(
+                  onPressed: () {
+                    // Update the camera record with the edited data
+                    setState(() {
+                      cameraToEdit.serialNumber = serialNumberController.text;
+                      cameraToEdit.purchaseDate = DateTime.tryParse(purchaseDateController.text);
+                      cameraToEdit.pricePaid = double.tryParse(pricePaidController.text);
+                      cameraToEdit.condition = conditionController.text;
+                      cameraToEdit.filmLoadDate = DateTime.tryParse(filmLoadDateController.text);
+                      cameraToEdit.filmLoaded = filmLoadedController.text;
+                      cameraToEdit.averagePrice = double.tryParse(averagePriceController.text);
+                      cameraToEdit.comments = commentsController.text;
+                      // Update other properties as needed...
+                    });
+
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Save'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
 
   // Future<void> _updateCameraModels() async {
   //   if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
