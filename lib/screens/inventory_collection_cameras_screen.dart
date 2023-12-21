@@ -9,6 +9,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
 
 
 
@@ -169,7 +170,7 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
           build: (pw.Context context) => [
           pw.Table.fromTextArray(
           context: context,
-          headerDecoration: pw.BoxDecoration(
+          headerDecoration: const pw.BoxDecoration(
             color: PdfColors.grey300,
           ),
           headerHeight: 25,
@@ -220,11 +221,17 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     );
 
     // Saving and printing the PDF file path...
-    final directory = await getApplicationDocumentsDirectory();
-    final String path = '${directory.path}/camera_collection.pdf';
-    final file = File(path);
-    await file.writeAsBytes(await pdf.save());
-    print('Saved PDF at: $path');
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+
+    if (selectedDirectory != null) {
+      final String path = '$selectedDirectory/camera_collection.pdf';
+      final file = File(path);
+      await file.writeAsBytes(await pdf.save());
+      print('Saved PDF at: $path');
+    } else {
+      // User canceled the picker
+      print('No directory selected');
+    }
   }
 
   void _showCameraOptionsMenu(BuildContext context, int index) {
@@ -235,8 +242,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Delete'),
+              leading: const Icon(Icons.delete),
+              title: const Text('Delete'),
               onTap: () {
                 Navigator.of(context).pop(); // Close the options menu
                 _confirmDeleteCamera(_cameras[index].id, index);
@@ -543,7 +550,7 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
             title: Text("${_cameras[index].brand} ${_cameras[index].model}"),
             subtitle: Text("Serial Number: ${_cameras[index].serialNumber ?? 'N/A'}"),
             trailing: IconButton(
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
               onPressed: () => _showCameraOptionsMenu(context, index),
             ),
             onTap: () => _showCameraDetails(_cameras[index]),
