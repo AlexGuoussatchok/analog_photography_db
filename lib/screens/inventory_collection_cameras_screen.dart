@@ -227,8 +227,27 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
     print('Saved PDF at: $path');
   }
 
-
-
+  void _showCameraOptionsMenu(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete'),
+              onTap: () {
+                Navigator.of(context).pop(); // Close the options menu
+                _confirmDeleteCamera(_cameras[index].id, index);
+              },
+            ),
+            // Add more options as needed
+          ],
+        );
+      },
+    );
+  }
 
   // Future<void> _updateCameraModels() async {
   //   if (_dialogSelectedBrand != null && _dialogSelectedBrand!.isNotEmpty) {
@@ -522,11 +541,10 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
         itemBuilder: (context, index) {
           return ListTile(
             title: Text("${_cameras[index].brand} ${_cameras[index].model}"),
-            subtitle: Text(
-                "Serial Number: ${_cameras[index].serialNumber ?? 'N/A'}"),
+            subtitle: Text("Serial Number: ${_cameras[index].serialNumber ?? 'N/A'}"),
             trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () => _confirmDeleteCamera(_cameras[index].id, index),
+              icon: Icon(Icons.menu),
+              onPressed: () => _showCameraOptionsMenu(context, index),
             ),
             onTap: () => _showCameraDetails(_cameras[index]),
           );
