@@ -692,6 +692,9 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
           PopupMenuButton<String>(
             onSelected: (String choice) {
               switch (choice) {
+                case 'Add Camera': // New case for adding a camera
+                  _showAddCameraDialog(context);
+                  break;
                 case 'Save as PDF':
                   _saveAsPdf();
                   break;
@@ -702,7 +705,7 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
               }
             },
             itemBuilder: (BuildContext context) {
-              return {'Save as PDF', 'Sort by Brand'}.map((String choice) {
+              return {'Add Camera', 'Save as PDF', 'Sort by Brand'}.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
@@ -727,10 +730,6 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
             onTap: () => _showCameraDetails(_cameras[index]),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddCameraDialog(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
