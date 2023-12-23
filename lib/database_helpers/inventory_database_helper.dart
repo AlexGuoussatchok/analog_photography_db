@@ -640,6 +640,7 @@ final Map<String, List<TableDefinition>> databaseDefinitions = {
 };
 
 class InventoryDatabaseHelper {
+  static Database? _database;
   static Future<Database> initDatabase(String dbName) async {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, dbName);
@@ -661,6 +662,13 @@ class InventoryDatabaseHelper {
           )
         ''');
       }
+    }
+  }
+
+  static Future<void> closeDatabase() async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
     }
   }
 }

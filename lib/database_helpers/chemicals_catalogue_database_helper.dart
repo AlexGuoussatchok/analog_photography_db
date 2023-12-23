@@ -77,5 +77,12 @@ class ChemicalsCatalogueDatabaseHelper {
     chemicalsList.sort((a, b) => a['name']!.compareTo(b['name']!));
     return chemicalsList;
   }
+
+  Future<void> closeDatabase() async {
+    final db = await database;
+    if (db != null) {
+      await db.close();
+    }
+  }
 }
 

@@ -8,6 +8,7 @@ import 'package:analog_photography_db/database_helpers/lenses_catalogue_database
 import 'package:analog_photography_db/database_helpers/films_catalogue_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/flashes_catalogue_database_helper.dart';
+import 'package:flutter/services.dart';
 
 
 void main() async {
@@ -57,12 +58,42 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  void _handleMenuSelection(String value) async {
+    switch (value) {
+      case 'Exit':
+      // Close all databases before exiting
+        await CamerasCatalogueDatabaseHelper().closeDatabase();
+        await LensesCatalogueDatabaseHelper().closeDatabase();
+        await FilmsCatalogueDatabaseHelper().closeDatabase();
+        await FlashesCatalogueDatabaseHelper().closeDatabase();
+        await InventoryDatabaseHelper.closeDatabase();
+
+        // Exits the app
+        SystemNavigator.pop();
+        break;
+    // Handle other menu options if any
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey,
         title: const Text('Analog Photography DB'),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: _handleMenuSelection,
+            itemBuilder: (BuildContext context) {
+              return {'Exit'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Center(

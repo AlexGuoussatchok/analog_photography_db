@@ -55,7 +55,17 @@ flutter:
     - assets/images/cameras/pentax/
     - assets/images/cameras/ricoh/
     - assets/images/cameras/samsung/
+    - assets/images/cameras/spartus/
+    - assets/images/cameras/sunagor/
+    - assets/images/cameras/tanack/
+    - assets/images/cameras/topcon/
+    - assets/images/cameras/topshot/
+    - assets/images/cameras/vivitar/
+    - assets/images/cameras/voigtlander/
+    - assets/images/cameras/wzfo/
     - assets/images/cameras/yashica/
+    - assets/images/cameras/zeis_ikon/
+    - assets/images/cameras/zenit/
 
     - assets/images/developers/
 

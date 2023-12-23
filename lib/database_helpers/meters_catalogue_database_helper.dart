@@ -96,4 +96,11 @@ class MetersCatalogueDatabaseHelper {
       _database = null;
     }
   }
+
+  Future<void> closeDatabase() async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
+    }
+  }
 }

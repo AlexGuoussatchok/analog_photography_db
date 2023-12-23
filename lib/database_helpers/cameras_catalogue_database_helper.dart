@@ -96,4 +96,12 @@ class CamerasCatalogueDatabaseHelper {
       _database = null;
     }
   }
+
+  Future<void> closeDatabase() async {
+    final db = await database;
+    if (db != null) {
+      await db.close();
+    }
+  }
+
 }
