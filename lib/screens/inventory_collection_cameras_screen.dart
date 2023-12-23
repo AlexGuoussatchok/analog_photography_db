@@ -313,7 +313,7 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Edit Camera'),
+          title: Text('Edit ${cameraToEdit.brand} ${cameraToEdit.model}'),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -396,7 +396,7 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
 
                 // Add a "Save" button to save changes
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Update the camera record with the edited data
                     setState(() {
                       cameraToEdit.serialNumber = serialNumberController.text;
@@ -409,6 +409,8 @@ class _InventoryCollectionCamerasScreenState extends State<InventoryCollectionCa
                       cameraToEdit.comments = commentsController.text;
                       // Update other properties as needed...
                     });
+                    await CamerasDatabaseHelper.updateCamera(cameraToEdit);
+                    _loadCameras();
 
                     // Close the dialog
                     Navigator.of(context).pop();

@@ -26,7 +26,10 @@ class CamerasDatabaseHelper {
   // This is a helper method to fetch all cameras for displaying
   static Future<List<InventoryCamera>> fetchCameras() async {
     final db = await _initDatabase();
-    final List<Map<String, dynamic>> maps = await db.query('cameras');
+    final List<Map<String, dynamic>> maps = await db.query(
+        'cameras',
+        orderBy: 'brand ASC, model ASC' // Order by brand first, then model, both in ascending order
+    );
     return maps.map((cameraMap) => InventoryCamera.fromMap(cameraMap)).toList();
   }
 
@@ -63,5 +66,14 @@ class CamerasDatabaseHelper {
     );
   }
 
+  static Future<void> updateCamera(InventoryCamera camera) async {
+    final db = await _initDatabase(); // Use _initDatabase() instead of database
+    await db.update(
+      'cameras', // The table name
+      camera.toMap(), // Convert the camera object to a map
+      where: 'id = ?', // Use a where clause to find the correct camera
+      whereArgs: [camera.id], // Pass the camera's ID as a where argument
+    );
+  }
 
 }
