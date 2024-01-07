@@ -5,6 +5,14 @@ import 'package:analog_photography_db/database_helpers/inventory_collection/film
 import 'package:analog_photography_db/database_helpers/inventory_collection/cameras_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/lenses_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/chemicals_database_helper.dart';
+import 'dart:io';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path/path.dart' as path;
+
 
 class CustomDropdown extends StatelessWidget {
   final List<String> items;
@@ -82,6 +90,126 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     _loadLenses();
     _loadDevelopers();
   }
+
+  void _saveAsPdf() async {
+    // Check and request storage permission
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+
+    final pdf = pw.Document();
+    final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+    final DateFormat titleDateFormat = DateFormat('yyyy-MM-dd HH:mm');
+    final String titleDate = titleDateFormat.format(DateTime.now());
+    final landscapeFormat = PdfPageFormat.a4.landscape;
+
+    final notes = await MyNotesDatabaseHelper().getDevelopingNotes();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: landscapeFormat,
+        header: (pw.Context context) {
+          if (context.pageNumber == 1) {
+            return pw.Column(
+                children: [
+                  pw.Text('Developing Notes - $titleDate', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                  pw.SizedBox(height: 10),
+                ]
+            );
+          }
+          return pw.Container();
+        },
+        build: (pw.Context context) => [
+          pw.Table.fromTextArray(
+            context: context,
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+            headerHeight: 25,
+            cellHeight: 40,
+            cellAlignments: {
+              0: pw.Alignment.center,
+              1: pw.Alignment.center,
+              2: pw.Alignment.center,
+              3: pw.Alignment.center,
+              4: pw.Alignment.center,
+              5: pw.Alignment.center,
+              6: pw.Alignment.center,
+              7: pw.Alignment.center,
+              8: pw.Alignment.center,
+              9: pw.Alignment.center,
+              10: pw.Alignment.center,
+              11: pw.Alignment.center,
+              12: pw.Alignment.center,
+              13: pw.Alignment.center,
+              14: pw.Alignment.center,
+              15: pw.Alignment.center,
+            },
+            headerStyle: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold),
+            cellStyle: const pw.TextStyle(color: PdfColors.black),
+            data: <List<String>>[
+              <String>[
+                'Date',
+                'Film Number',
+                'Film Name',
+                'ISO',
+                'Film Expired?',
+                'Expired date',
+                'Camera',
+                'Lenses',
+                'Developer',
+                'Lab',
+                'Dilution',
+                'Dev Time',
+                'Temperature',
+                'Comments',
+              ],
+              ...notes.map((note) => [
+                note['date']?.toString() ?? 'N/A',
+                note['film_number']?.toString() ?? 'N/A',
+                note['film_name']?.toString() ?? 'N/A',
+                note['ISO']?.toString() ?? 'N/A',
+                note['film_expired']?.toString() ?? 'N/A',
+                note['film_exp_date']?.toString() ?? 'N/A',
+                note['camera']?.toString() ?? 'N/A',
+                note['lenses']?.toString() ?? 'N/A',
+                note['developer']?.toString() ?? 'N/A',
+                note['lab']?.toString() ?? 'N/A',
+                note['dilution']?.toString() ?? 'N/A',
+                note['dev_time']?.toString() ?? 'N/A',
+                note['temp']?.toString() ?? 'N/A',
+                note['comments']?.toString() ?? 'N/A',
+
+              ]).toList(),
+            ],
+          ),
+          // ... other content ...
+        ],
+      ),
+    );
+
+    // Save the PDF
+    try {
+      // Get the external storage directory path (public directory)
+      final Directory? externalDirectory = await getExternalStorageDirectory();
+      final String directoryPath = externalDirectory != null ? path.dirname(externalDirectory.path) : (await getApplicationDocumentsDirectory()).path;
+      final String documentsPath = path.join(directoryPath, 'Documents');
+
+      // Create the Documents directory if it doesn't exist
+      final Directory documentsDirectory = Directory(documentsPath);
+      if (!await documentsDirectory.exists()) {
+        await documentsDirectory.create(recursive: true);
+      }
+
+      // Save the PDF file in the Documents directory
+      final String filePath = path.join(documentsPath, 'DevelopingNotes_$titleDate.pdf');
+      final File file = File(filePath);
+      await file.writeAsBytes(await pdf.save());
+      print('Saved PDF at: $filePath');
+    } catch (e) {
+      print('Error saving PDF: $e');
+    }
+  }
+
 
   Future<void> _loadDevelopers() async {
     developers = await ChemicalsDatabaseHelper.getDevelopers();
@@ -395,6 +523,24 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Developing Notes'),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (String choice) {
+              if (choice == 'Save as PDF') {
+                _saveAsPdf();
+              }
+              // Handle other menu options if any
+            },
+            itemBuilder: (BuildContext context) {
+              return {'Save as PDF'}.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddNoteDialog(context),
