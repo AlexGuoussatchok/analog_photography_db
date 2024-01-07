@@ -139,4 +139,13 @@ class MyNotesDatabaseHelper {
     return 0;
   }
 
+  Future<void> deleteDevelopingNote(int id) async {
+    final db = await database;
+    await db.delete(
+      'my_film_dev_notes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
 }

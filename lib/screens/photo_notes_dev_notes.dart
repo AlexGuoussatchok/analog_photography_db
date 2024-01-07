@@ -11,11 +11,11 @@ class CustomDropdown extends StatelessWidget {
   final Function(String?) onChanged;
 
   const CustomDropdown({
-    Key? key,
+    super.key,
     required this.items,
     required this.value,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class CustomDropdown extends StatelessWidget {
 
   String _truncateWithEllipsis(String text, int maxLength) {
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return '${text.substring(0, maxLength)}...';
   }
 
   String _replaceUnderscores(String text) {
@@ -78,6 +78,42 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     _loadCameras();
     _loadLenses();
   }
+
+  Future<void> _deleteNote(int id) async {
+    // Show a confirmation dialog before deleting
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Confirm Delete"),
+          content: const Text("Are you sure you want to delete this note?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false); // Dismiss dialog and return 'false'
+              },
+            ),
+            TextButton(
+              child: const Text("Delete"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true); // Dismiss dialog and return 'true'
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    // If deletion is confirmed, proceed to delete the note
+    if (confirmDelete) {
+      await MyNotesDatabaseHelper().deleteDevelopingNote(id);
+      setState(() {
+        _notesFuture = MyNotesDatabaseHelper().getDevelopingNotes();
+      });
+    }
+  }
+
 
   Future<void> _loadFilmNames() async {
     filmNames = await FilmsDatabaseHelper.getFilmNamesForDropdown();
@@ -116,7 +152,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
 
     String? selectedFilmName;
 
-    Future<void> _selectDate(BuildContext context) async {
+    Future<void> selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -139,7 +175,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
             child: Column(
               children: <Widget>[
                 InkWell(
-                  onTap: () => _selectDate(context),
+                  onTap: () => selectDate(context),
                   child: IgnorePointer(
                     child: TextField(
                       controller: dateController,
@@ -365,6 +401,23 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   onTap: () {
                     MyNotesDatabaseHelper.showNoteDetails(context, note);
                   },
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (String choice) {
+                      if (choice == 'Delete') {
+                        _deleteNote(note['id']);
+                      } else if (choice == 'Edit') {
+                        // Implement edit functionality
+                      }
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return {'Edit', 'Delete'}.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        );
+                      }).toList();
+                    },
+                  ),
                 );
               },
             );
