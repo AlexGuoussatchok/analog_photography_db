@@ -70,4 +70,13 @@ class ChemicalsDatabaseHelper {
       whereArgs: [id],
     );
   }
+
+  static Future<List<String>> getDevelopers() async {
+    final db = await _initDatabase();
+    // Query the database and get unique developer names
+    final List<Map<String, dynamic>> result = await db.rawQuery('SELECT DISTINCT chemical FROM photo_chemistry WHERE type = ?', ['developer']);
+    // Extracting the names and converting them to a list of strings
+    return result.map((row) => row['chemical'] as String).toList();
+  }
+
 }

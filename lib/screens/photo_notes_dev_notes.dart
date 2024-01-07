@@ -4,6 +4,7 @@ import 'package:analog_photography_db/database_helpers/my_notes_database_helper.
 import 'package:analog_photography_db/database_helpers/inventory_collection/films_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/cameras_database_helper.dart';
 import 'package:analog_photography_db/database_helpers/inventory_collection/lenses_database_helper.dart';
+import 'package:analog_photography_db/database_helpers/inventory_collection/chemicals_database_helper.dart';
 
 class CustomDropdown extends StatelessWidget {
   final List<String> items;
@@ -69,6 +70,8 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
   String? selectedCamera;
   List<Map<String, dynamic>> lensesDropdownItems = [];
   String? selectedLenses;
+  List<String> developers = []; // This list will hold your developers
+  String? selectedDeveloper;
 
   @override
   void initState() {
@@ -77,7 +80,14 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     _loadFilmNames();
     _loadCameras();
     _loadLenses();
+    _loadDevelopers();
   }
+
+  Future<void> _loadDevelopers() async {
+    developers = await ChemicalsDatabaseHelper.getDevelopers();
+    setState(() {});
+  }
+
 
   Future<void> _deleteNote(int id) async {
     // Show a confirmation dialog before deleting
@@ -289,36 +299,50 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   },
                 ),
 
-                TextField(
-                  controller: developerController,
-                  decoration: const InputDecoration(
-                    labelText: 'Developer',
-                  ),
+                DropdownButtonFormField<String>(
+                  value: selectedDeveloper,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedDeveloper = newValue;
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Developer'), // Label for the dropdown
+                  items: developers.map<DropdownMenuItem<String>>((String developer) {
+                    return DropdownMenuItem<String>(
+                      value: developer,
+                      child: Text(developer),
+                    );
+                  }).toList(),
                 ),
+
                 TextField(
                   controller: labController,
                   decoration: const InputDecoration(
                     labelText: 'Lab',
                   ),
                 ),
+
                 TextField(
                   controller: dilutionController,
                   decoration: const InputDecoration(
                     labelText: 'Dilution',
                   ),
                 ),
+
                 TextField(
                   controller: devTimeController,
                   decoration: const InputDecoration(
                     labelText: 'Dev Time',
                   ),
                 ),
+
                 TextField(
                   controller: temperatureController,
                   decoration: const InputDecoration(
                     labelText: 'Temperature',
                   ),
                 ),
+
                 TextField(
                   controller: commentsController,
                   decoration: const InputDecoration(
