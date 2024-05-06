@@ -188,25 +188,15 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
     );
 
     // Save the PDF
-    try {
-      // Get the external storage directory path (public directory)
-      final Directory? externalDirectory = await getExternalStorageDirectory();
-      final String directoryPath = externalDirectory != null ? path.dirname(externalDirectory.path) : (await getApplicationDocumentsDirectory()).path;
-      final String documentsPath = path.join(directoryPath, 'Documents');
+    final result = await FilePicker.platform.saveFile(
+      dialogTitle: 'Please select an output file:',
+      fileName: 'DevelopingNotes_${DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())}.pdf',
+    );
 
-      // Create the Documents directory if it doesn't exist
-      final Directory documentsDirectory = Directory(documentsPath);
-      if (!await documentsDirectory.exists()) {
-        await documentsDirectory.create(recursive: true);
-      }
-
-      // Save the PDF file in the Documents directory
-      final String filePath = path.join(documentsPath, 'DevelopingNotes_$titleDate.pdf');
-      final File file = File(filePath);
+    if (result != null) {
+      final file = File(result);
       await file.writeAsBytes(await pdf.save());
-      print('Saved PDF at: $filePath');
-    } catch (e) {
-      print('Error saving PDF: $e');
+      print('Saved PDF at: $result');
     }
   }
 
@@ -323,6 +313,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                     ),
                   ),
                 ),
+
                 TextField(
                   controller: filmNumberController,
                   decoration: const InputDecoration(
@@ -330,6 +321,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                   ),
                   keyboardType: TextInputType.number, // Set the keyboard type to numeric
                 ),
+
                 DropdownButtonFormField<String>(
                   value: selectedFilmName,
                   decoration: const InputDecoration(labelText: 'Select Film Name'),
@@ -364,6 +356,7 @@ class _DevelopingNotesScreenState extends State<DevelopingNotesScreen> {
                     );
                   }).toList(),
                 ),
+
                 TextField(
                   controller: filmTypeController,
                   decoration: const InputDecoration(
